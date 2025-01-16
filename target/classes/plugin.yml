@@ -1,0 +1,16 @@
+name: CmdPlus
+version: '1.0'
+main: me.JuliusH_1.cmdplus
+api-version: '1.21'
+authors: [ JuliusH_1 | Owner VoidCraft Network ]
+description: Create custom command aliases command signs and much much more!
+website: www.voidcraftmc.net
+commands:
+  cmdalias:
+    description: Command alias management
+    usage: /cmdalias <create/list> <alias> <command> [permission]
+    permission: commandalias.manage
+  cmdplus:
+    description: CmdPlus management
+    usage: /cmdplus reload <alias/sign/config/all>
+    permission: cmdplus.manage

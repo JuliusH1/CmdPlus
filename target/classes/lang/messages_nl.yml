@@ -1,0 +1,8 @@
+no_permission: "Je hebt geen toestemming om dit commando te gebruiken."
+alias_not_found: "Alias niet gevonden."
+cmdalias_usage: "Gebruik: /cmdalias <create|list>"
+cmdalias_create_usage: "Gebruik: /cmdalias create <alias> <command> [permission]"
+alias_created: "Alias {alias} gemaakt voor commando {command}."
+alias_permission: "Vereiste toestemming: {permission}"
+alias_list_header: "Lijst van aliassen:"
+unknown_subcommand: "Onbekend subcommando."

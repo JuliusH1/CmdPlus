@@ -1,0 +1,8 @@
+no_permission: "您没有权限使用此命令。"
+alias_not_found: "未找到别名。"
+cmdalias_usage: "用法: /cmdalias <create|list>"
+cmdalias_create_usage: "用法: /cmdalias create <alias> <command> [permission]"
+alias_created: "已为命令 {command} 创建别名 {alias}。"
+alias_permission: "所需权限: {permission}"
+alias_list_header: "别名列表:"
+unknown_subcommand: "未知的子命令。

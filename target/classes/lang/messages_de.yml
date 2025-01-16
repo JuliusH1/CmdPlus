@@ -1,0 +1,8 @@
+no_permission: "Du hast keine Berechtigung, diesen Befehl zu verwenden."
+alias_not_found: "Alias nicht gefunden."
+cmdalias_usage: "Verwendung: /cmdalias <create|list>"
+cmdalias_create_usage: "Verwendung: /cmdalias create <alias> <command> [permission]"
+alias_created: "Alias {alias} für Befehl {command} erstellt."
+alias_permission: "Erforderliche Berechtigung: {permission}"
+alias_list_header: "Liste der Aliase:"
+unknown_subcommand: "Unbekannter Unterbefehl."

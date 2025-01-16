@@ -1,0 +1,20 @@
+Aliases:
+  example: #alias
+    command: help #Performed command
+    permission: commandalias.use.help #permission
+  # so when someone with the permission commandalias.use.help types /example it will perform the command /help.
+  spawn:
+    command: warp spawn
+    permission: commandalias.use.spawn
+  greet:
+    command: say Hello, everyone!
+    permission: commandalias.use.greet
+  lobby:
+    command: server lobby
+    permission: commandalias.use.lobby
+  hub:
+    command: server lobby
+    permission: commandalias.use.hub
+  crates:
+    command: warp crates
+    permission: commandalias.use.crates

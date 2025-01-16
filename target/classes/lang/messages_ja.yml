@@ -1,0 +1,8 @@
+no_permission: "このコマンドを使用する権限がありません。"
+alias_not_found: "エイリアスが見つかりません。"
+cmdalias_usage: "使用法: /cmdalias <create|list>"
+cmdalias_create_usage: "使用法: /cmdalias create <alias> <command> [permission]"
+alias_created: "コマンド {command} のエイリアス {alias} が作成されました。"
+alias_permission: "必要な権限: {permission}"
+alias_list_header: "エイリアスのリスト:"
+unknown_subcommand: "不明なサブコマンド。"
