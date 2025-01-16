@@ -12,7 +12,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="CmdPlus" options="--add-exports jdk.jlink/jdk.tools.jlink.internal.plugins=ALL-UNNAMED" />
+      <module name="CmdPlus" options="" />
     </option>
   </component>
 </project>

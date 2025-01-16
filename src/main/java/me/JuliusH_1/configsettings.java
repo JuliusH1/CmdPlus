@@ -4,12 +4,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class configsettings {
+import java.util.Objects;
 
+public class configsettings {
     private final JavaPlugin plugin;
     private long commandCooldown;
     private long cmdsignCooldown;
-    private String cmdsignPrefix;
     private String pluginPrefix;
     private String language;
 
@@ -20,12 +20,17 @@ public class configsettings {
 
     private void loadConfig() {
         FileConfiguration config = plugin.getConfig();
-        String cooldownString = config.getString("settings.cmd_cooldown", "1s");
-        commandCooldown = parseCooldown(cooldownString);
-        String cmdsignCooldownString = config.getString("settings.cmdsign_cooldown", "10s");
-        cmdsignCooldown = parseCooldown(cmdsignCooldownString);
-        pluginPrefix = ChatColor.translateAlternateColorCodes('&', config.getString("settings.plugin_prefix", "&7[&6CmdPlus&7]"));
+        commandCooldown = parseCooldown(config.getString("settings.cmd_cooldown", "1s"));
+        cmdsignCooldown = parseCooldown(config.getString("settings.cmdsign_cooldown", "10s"));
+        pluginPrefix = ChatColor.translateAlternateColorCodes('&', config.getString("settings.plugin_prefix", "&7[&6CmdPlus&7] "));
         language = config.getString("settings.language", "EN").toLowerCase();
+    }
+
+    public void reload(FileConfiguration config) {
+        this.commandCooldown = parseCooldown(config.getString("settings.cmd_cooldown", "1s"));
+        this.cmdsignCooldown = parseCooldown(config.getString("settings.cmdsign_cooldown", "10s"));
+        this.pluginPrefix = ChatColor.translateAlternateColorCodes('&', config.getString("settings.plugin_prefix", "&7[&6CmdPlus&7] "));
+        this.language = config.getString("settings.language", "EN").toLowerCase();
     }
 
     private long parseCooldown(String cooldownString) {
@@ -37,13 +42,6 @@ public class configsettings {
             cooldownString = cooldownString.substring(0, cooldownString.length() - 1);
         }
         return Long.parseLong(cooldownString) * multiplier;
-    }
-
-    public void reload(FileConfiguration config) {
-        this.commandCooldown = parseCooldown(config.getString("settings.cmd_cooldown", "1s"));
-        this.cmdsignCooldown = parseCooldown(config.getString("settings.cmdsign_cooldown", "10s"));
-        this.pluginPrefix = ChatColor.translateAlternateColorCodes('&', config.getString("settings.plugin_prefix", "&7[&6CmdPlus&7]"));
-        this.language = config.getString("settings.language", "EN").toLowerCase();
     }
 
     public long getCommandCooldown() {
