@@ -71,7 +71,7 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
     public void reloadPluginConfig() {
         reloadConfig();
         config = getConfig();
-        configSettings.reload(config);
+        configSettings.reloadConfig();
         cmdAliasHandler.reloadAliases();
         cmdSignHandler.reloadSigns();
         loadMessages();
