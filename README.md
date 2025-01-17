@@ -3,4 +3,8 @@
 # CmdPlus
 
 ## CmdPlus is a new command management plugin!
-### Check it out on [buildbybit](https://builtbybit.com/resources/cmdplus.58077/)
+### Check it out on [BuildByBit](https://builtbybit.com/resources/cmdplus.58077/)
+
+### Features:
+ - **[CmdAliases:](https://github.com/JuliusH1/CmdPlus/wiki/CmdAlias)** Create custom aliases for commands in the aliases.yml with permissions!
+ - **[CmdSigns:](https://github.com/JuliusH1/CmdPlus/wiki/CmdSigns)** Create signs that run commands when right-clicked! 
