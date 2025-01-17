@@ -140,8 +140,8 @@ public class cmdalias implements CommandExecutor, TabCompleter {
             }
 
             String aliasName = args[1];
-            String cmd = String.join(" ", Arrays.copyOfRange(args, 2, args.length)).replace("-", " ");
-            String permission = args.length > 3 ? args[3] : null;
+            String cmd = String.join(" ", Arrays.copyOfRange(args, 2, args.length - 1)).replace("-", " ");
+            String permission = args[args.length - 1];
 
             createAlias(aliasName, cmd, permission);
             sender.sendMessage(pluginPrefix + getMessage("alias_created")
@@ -218,4 +218,3 @@ public class cmdalias implements CommandExecutor, TabCompleter {
         return Collections.emptyList();
     }
 }
-//  add velocity compatibilty for the command /server
