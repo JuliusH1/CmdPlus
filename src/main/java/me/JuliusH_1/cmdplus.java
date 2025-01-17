@@ -33,6 +33,14 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
         loadMessages();
         getCommand("cmdplus").setTabCompleter(this);
 
+
+        // Register the trash command
+        getCommand("trash").setExecutor(new TrashCommand(this));
+        getCommand("bin").setExecutor(new TrashCommand(this));
+
+        // Register the private chest command
+        getCommand("privatechest").setExecutor(new PrivateChestCommand(this));
+
         // Translate color codes in the plugin prefix
         String translatedPrefix = ChatColor.translateAlternateColorCodes('&', configSettings.getPluginPrefix());
         Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "===============================");
