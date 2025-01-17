@@ -3,4 +3,4 @@
 # CmdPlus
 
 ## CmdPlus is a new command management plugin!
-### Check it out on (buildbybit)
+### Check it out on (buildbybit).
