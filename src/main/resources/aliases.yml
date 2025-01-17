@@ -1,3 +1,6 @@
+# I recommend creating aliases here and not ingame as the permissions might not always work.
+# After creating a new aliases here save it and reload the plugin using /cmdplus reload alias/all
+
 Aliases:
   example: #alias
     command: help #Performed command

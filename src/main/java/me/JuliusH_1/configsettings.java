@@ -22,15 +22,25 @@ public class configsettings {
         FileConfiguration config = plugin.getConfig();
         commandCooldown = parseCooldown(config.getString("settings.cmd_cooldown", "1s"));
         cmdsignCooldown = parseCooldown(config.getString("settings.cmdsign_cooldown", "10s"));
-        pluginPrefix = ChatColor.translateAlternateColorCodes('&', config.getString("settings.plugin_prefix", "&7[&6CmdPlus&7] "));
+        pluginPrefix = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("settings.plugin_prefix")));
         language = config.getString("settings.language", "EN").toLowerCase();
+        logConfigSettings();
     }
 
     public void reload(FileConfiguration config) {
-        this.commandCooldown = parseCooldown(config.getString("settings.cmd_cooldown", "1s"));
-        this.cmdsignCooldown = parseCooldown(config.getString("settings.cmdsign_cooldown", "10s"));
-        this.pluginPrefix = ChatColor.translateAlternateColorCodes('&', config.getString("settings.plugin_prefix", "&7[&6CmdPlus&7] "));
-        this.language = config.getString("settings.language", "EN").toLowerCase();
+        commandCooldown = parseCooldown(config.getString("settings.cmd_cooldown", "1s"));
+        cmdsignCooldown = parseCooldown(config.getString("settings.cmdsign_cooldown", "10s"));
+        pluginPrefix = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("settings.plugin_prefix")));
+        language = config.getString("settings.language", "EN").toLowerCase();
+        logConfigSettings();
+    }
+
+    private void logConfigSettings() {
+        plugin.getLogger().info("Config Settings:");
+        plugin.getLogger().info("Command Cooldown: " + commandCooldown);
+        plugin.getLogger().info("Cmdsign Cooldown: " + cmdsignCooldown);
+        plugin.getLogger().info("Plugin Prefix: " + pluginPrefix);
+        plugin.getLogger().info("Language: " + language);
     }
 
     private long parseCooldown(String cooldownString) {

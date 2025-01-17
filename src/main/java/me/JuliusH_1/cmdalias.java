@@ -124,19 +124,23 @@ public class cmdalias implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        plugin.getLogger().info("onCommand called with args: " + Arrays.toString(args));
+
         if (args.length < 1) {
             sender.sendMessage(pluginPrefix + getMessage("cmdalias_usage"));
             return true;
         }
 
         if (args[0].equalsIgnoreCase("create")) {
+            plugin.getLogger().info("Create command detected");
+
             if (args.length < 3) {
                 sender.sendMessage(pluginPrefix + getMessage("cmdalias_create_usage"));
                 return true;
             }
 
             String aliasName = args[1];
-            String cmd = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
+            String cmd = String.join(" ", Arrays.copyOfRange(args, 2, args.length)).replace("-", " ");
             String permission = args.length > 3 ? args[3] : null;
 
             createAlias(aliasName, cmd, permission);
@@ -149,6 +153,8 @@ public class cmdalias implements CommandExecutor, TabCompleter {
 
             return true;
         } else if (args[0].equalsIgnoreCase("list")) {
+            plugin.getLogger().info("List command detected");
+
             sender.sendMessage(pluginPrefix + getMessage("alias_list_header"));
             for (String alias : aliases.keySet()) {
                 sender.sendMessage("- " + alias);
