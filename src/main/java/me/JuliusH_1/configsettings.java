@@ -27,12 +27,9 @@ public class configsettings {
         logConfigSettings();
     }
 
-    public void reload(FileConfiguration config) {
-        commandCooldown = parseCooldown(config.getString("settings.cmd_cooldown", "1s"));
-        cmdsignCooldown = parseCooldown(config.getString("settings.cmdsign_cooldown", "10s"));
-        pluginPrefix = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("settings.plugin_prefix")));
-        language = config.getString("settings.language", "EN").toLowerCase();
-        logConfigSettings();
+    public void reloadConfig() {
+        plugin.reloadConfig();
+        loadConfig();
     }
 
     private void logConfigSettings() {

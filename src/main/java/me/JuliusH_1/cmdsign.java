@@ -13,7 +13,10 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
@@ -26,15 +29,30 @@ public class cmdsign implements Listener {
     private final List<SignData> signs = new ArrayList<>();
     private final Map<UUID, Long> cooldowns = new HashMap<>();
     private final long cmdsignCooldown;
-    private final String pluginPrefix;
+    private String pluginPrefix;
     private final Map<UUID, Location> pendingRemovals = new HashMap<>();
+    private FileConfiguration messages;
+    private configsettings configSettings;
 
     public cmdsign(JavaPlugin plugin) {
         this.plugin = plugin;
-        configsettings configSettings = new configsettings(plugin);
+        this.configSettings = new configsettings(plugin);
         this.cmdsignCooldown = configSettings.getCmdsignCooldown();
         this.pluginPrefix = configSettings.getPluginPrefix();
+        loadMessages(configSettings.getLanguage());
         Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
+
+    private void loadMessages(String language) {
+        File messagesFile = new File(this.plugin.getDataFolder(), "lang/messages_" + language.toLowerCase() + ".yml");
+        if (!messagesFile.exists()) {
+            messagesFile = new File(this.plugin.getDataFolder(), "lang/messages_en.yml");
+        }
+        this.messages = YamlConfiguration.loadConfiguration(messagesFile);
+    }
+
+    public String getMessage(String key) {
+        return messages.getString(key, "Message not found: " + key);
     }
 
     @EventHandler
@@ -64,7 +82,7 @@ public class cmdsign implements Listener {
                         long currentTime = System.currentTimeMillis();
 
                         if (cooldowns.containsKey(playerId) && (currentTime - cooldowns.get(playerId)) < cmdsignCooldown) {
-                            player.sendMessage(pluginPrefix + "You must wait before using this command again!");
+                            player.sendMessage(pluginPrefix + getMessage("on_cmdsign_cooldown"));
                             event.setCancelled(true);
                             return;
                         }
@@ -86,10 +104,10 @@ public class cmdsign implements Listener {
                     if (pendingRemovals.containsKey(playerId) && pendingRemovals.get(playerId).equals(signLocation)) {
                         block.breakNaturally(new ItemStack(Material.AIR));
                         pendingRemovals.remove(playerId);
-                        player.sendMessage(pluginPrefix + "CmdSign removed!");
+                        player.sendMessage(pluginPrefix + getMessage("cmdsign_removed"));
                     } else {
                         pendingRemovals.put(playerId, signLocation);
-                        player.sendMessage(pluginPrefix + "Left-click again to confirm removal of this CmdSign.");
+                        player.sendMessage(pluginPrefix + getMessage("confirm_remove_cmdsign"));
                     }
                 }
             }

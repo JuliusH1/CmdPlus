@@ -24,25 +24,24 @@ import java.util.Map;
 public class cmdalias implements CommandExecutor, TabCompleter {
 
     private final JavaPlugin plugin;
-    private final Map<String, Alias> aliases = new HashMap<>();
+    private final Map<String, String> aliases = new HashMap<>();
     private FileConfiguration messages;
     private FileConfiguration aliasesConfig;
     private File aliasesFile;
-    private final String pluginPrefix;
+    private String pluginPrefix;
+    private configsettings configSettings;
 
     public cmdalias(JavaPlugin plugin) {
         this.plugin = plugin;
-        configsettings configSettings = new configsettings(plugin);
+        this.configSettings = new configsettings(plugin);
         this.pluginPrefix = configSettings.getPluginPrefix();
-        loadMessages();
+        loadMessages(configSettings.getLanguage());
         loadAliasesConfig();
         reloadAliases();
     }
 
-    private void loadMessages() {
-        configsettings configSettings = new configsettings(plugin);
-        String language = configSettings.getLanguage().toLowerCase();
-        File messagesFile = new File(this.plugin.getDataFolder(), "lang/messages_" + language + ".yml");
+    private void loadMessages(String language) {
+        File messagesFile = new File(this.plugin.getDataFolder(), "lang/messages_" + language.toLowerCase() + ".yml");
         if (!messagesFile.exists()) {
             messagesFile = new File(this.plugin.getDataFolder(), "lang/messages_en.yml");
         }
@@ -91,14 +90,9 @@ public class cmdalias implements CommandExecutor, TabCompleter {
     }
 
     private boolean executeAlias(String aliasName, CommandSender sender) {
-        Alias alias = aliases.get(aliasName.toLowerCase());
-        if (alias != null) {
-            if (alias.getPermission() != null && !sender.hasPermission(alias.getPermission())) {
-                sender.sendMessage(pluginPrefix + getMessage("no_permission"));
-                return true;
-            }
-
-            String formattedCommand = alias.getCommand().startsWith("/") ? alias.getCommand() : "/" + alias.getCommand();
+        String command = aliases.get(aliasName.toLowerCase());
+        if (command != null) {
+            String formattedCommand = command.startsWith("/") ? command : "/" + command;
 
             if (sender instanceof Player) {
                 Player player = (Player) sender;
@@ -117,8 +111,7 @@ public class cmdalias implements CommandExecutor, TabCompleter {
         loadAliasesConfig();
         aliasesConfig.getConfigurationSection("Aliases").getKeys(false).forEach(aliasName -> {
             String command = aliasesConfig.getString("Aliases." + aliasName + ".command");
-            String permission = aliasesConfig.getString("Aliases." + aliasName + ".permission");
-            createAlias(aliasName, command, permission);
+            aliases.put(aliasName.toLowerCase(), command);
         });
     }
 
@@ -160,6 +153,12 @@ public class cmdalias implements CommandExecutor, TabCompleter {
                 sender.sendMessage("- " + alias);
             }
             return true;
+        } else if (args[0].equalsIgnoreCase("reload") && args.length == 2 && args[1].equalsIgnoreCase("config")) {
+            configSettings.reloadConfig();
+            this.pluginPrefix = configSettings.getPluginPrefix();
+            loadMessages(configSettings.getLanguage());
+            sender.sendMessage(pluginPrefix + getMessage("plugin_reloaded"));
+            return true;
         }
 
         sender.sendMessage(pluginPrefix + getMessage("unknown_subcommand"));
@@ -168,7 +167,7 @@ public class cmdalias implements CommandExecutor, TabCompleter {
 
     public boolean createAlias(String aliasName, String command, String permission) {
         aliasName = aliasName.toLowerCase();
-        aliases.put(aliasName, new Alias(command, permission));
+        aliases.put(aliasName, command);
         aliasesConfig.set("Aliases." + aliasName + ".command", command);
         aliasesConfig.set("Aliases." + aliasName + ".permission", permission);
 
@@ -189,28 +188,10 @@ public class cmdalias implements CommandExecutor, TabCompleter {
         return messages.getString(key, "Message not found: " + key);
     }
 
-    private static class Alias {
-        private final String command;
-        private final String permission;
-
-        public Alias(String command, String permission) {
-            this.command = command;
-            this.permission = permission;
-        }
-
-        public String getCommand() {
-            return command;
-        }
-
-        public String getPermission() {
-            return permission;
-        }
-    }
-
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("create", "list");
+            return Arrays.asList("create", "list", "reload");
         }
         if (args[0].equalsIgnoreCase("create") && args.length == 2) {
             return Collections.emptyList();
