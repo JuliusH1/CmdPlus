@@ -1,6 +1,10 @@
 package me.JuliusH_1;
 
+import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.object.TownBlock;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -32,14 +36,14 @@ public class cmdsign implements Listener {
     private String pluginPrefix;
     private final Map<UUID, Location> pendingRemovals = new HashMap<>();
     private FileConfiguration messages;
-    private configsettings configSettings;
+    private ConfigSettings ConfigSettings;
 
     public cmdsign(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.configSettings = new configsettings(plugin);
-        this.cmdsignCooldown = configSettings.getCmdsignCooldown();
-        this.pluginPrefix = configSettings.getPluginPrefix();
-        loadMessages(configSettings.getLanguage());
+        this.ConfigSettings = new ConfigSettings(plugin);
+        this.cmdsignCooldown = ConfigSettings.getCmdsignCooldown();
+        this.pluginPrefix = ConfigSettings.getPluginPrefix();
+        loadMessages(ConfigSettings.getLanguage());
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -102,9 +106,13 @@ public class cmdsign implements Listener {
                     Location signLocation = sign.getLocation();
 
                     if (pendingRemovals.containsKey(playerId) && pendingRemovals.get(playerId).equals(signLocation)) {
-                        block.breakNaturally(new ItemStack(Material.AIR));
-                        pendingRemovals.remove(playerId);
-                        player.sendMessage(pluginPrefix + getMessage("cmdsign_removed"));
+                        if (canBreakSign(player, signLocation)) {
+                            block.breakNaturally(new ItemStack(Material.AIR));
+                            pendingRemovals.remove(playerId);
+                            player.sendMessage(pluginPrefix + getMessage("cmdsign_removed"));
+                        } else {
+                            player.sendMessage(pluginPrefix + getMessage("no_permission_to_break"));
+                        }
                     } else {
                         pendingRemovals.put(playerId, signLocation);
                         player.sendMessage(pluginPrefix + getMessage("confirm_remove_cmdsign"));
@@ -147,6 +155,17 @@ public class cmdsign implements Listener {
                 material == Material.MANGROVE_SIGN || material == Material.MANGROVE_WALL_SIGN ||
                 material == Material.BAMBOO_SIGN || material == Material.BAMBOO_WALL_SIGN ||
                 material == Material.CHERRY_SIGN || material == Material.CHERRY_WALL_SIGN;
+    }
+
+    private boolean canBreakSign(Player player, Location signLocation) {
+        TownyAPI townyAPI = TownyAPI.getInstance();
+        TownBlock townBlock = townyAPI.getTownBlock(signLocation);
+        if (townBlock != null) {
+            Town signTown = townBlock.getTownOrNull();
+            Town playerTown = townyAPI.getResident(player).getTownOrNull();
+            return signTown != null && playerTown != null && !signTown.equals(playerTown);
+        }
+        return false;
     }
 
     public void saveSign(Sign sign) {

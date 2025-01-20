@@ -12,37 +12,34 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class cmdplus extends JavaPlugin implements TabCompleter {
 
     private FileConfiguration config;
     private FileConfiguration messages;
-    private configsettings configSettings;
+    private ConfigSettings ConfigSettings;
     private cmdalias cmdAliasHandler;
     private cmdsign cmdSignHandler;
+    private Map<String, Boolean> commandStatus = new HashMap<>();
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
         config = getConfig();
-        configSettings = new configsettings(this);
+        ConfigSettings = new ConfigSettings(this);
         cmdAliasHandler = new cmdalias(this);
         cmdSignHandler = new cmdsign(this);
         saveDefaultLangFiles();
         loadMessages();
+        loadCommandStatus();
+        registerCommands();
         getCommand("cmdplus").setTabCompleter(this);
 
-
-        // Register the trash command
-        getCommand("trash").setExecutor(new TrashCommand(this));
-        getCommand("bin").setExecutor(new TrashCommand(this));
-
-        // Register the private chest command
-        getCommand("privatechest").setExecutor(new PrivateChestCommand(this));
-
         // Translate color codes in the plugin prefix
-        String translatedPrefix = ChatColor.translateAlternateColorCodes('&', configSettings.getPluginPrefix());
+        String translatedPrefix = ChatColor.translateAlternateColorCodes('&', ConfigSettings.getPluginPrefix());
         Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "===============================");
         Bukkit.getConsoleSender().sendMessage(translatedPrefix + "CmdPlus is now enabled!");
         Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "===============================");
@@ -69,6 +66,30 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
         messages = YamlConfiguration.loadConfiguration(messagesFile);
     }
 
+    private void loadCommandStatus() {
+        File commandsFile = new File(getDataFolder(), "commands.yml");
+        if (!commandsFile.exists()) {
+            saveResource("commands.yml", false);
+        }
+        FileConfiguration commandsConfig = YamlConfiguration.loadConfiguration(commandsFile);
+        for (String command : commandsConfig.getConfigurationSection("Commands").getKeys(false)) {
+            commandStatus.put(command, commandsConfig.getBoolean("Commands." + command));
+        }
+    }
+
+    private void registerCommands() {
+        if (commandStatus.getOrDefault("trash", false)) {
+            getCommand("trash").setExecutor(new TrashCommand(this));
+        }
+        if (commandStatus.getOrDefault("bin", false)) {
+            getCommand("bin").setExecutor(new TrashCommand(this));
+        }
+        if (commandStatus.getOrDefault("privatechest", false)) {
+            getCommand("privatechest").setExecutor(new PrivateChestCommand(this));
+        }
+        // Add more commands as needed
+    }
+
     @Override
     public void onDisable() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "===============================");
@@ -79,10 +100,12 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
     public void reloadPluginConfig() {
         reloadConfig();
         config = getConfig();
-        configSettings.reloadConfig();
+        ConfigSettings.reloadConfig();
         cmdAliasHandler.reloadAliases();
         cmdSignHandler.reloadSigns();
         loadMessages();
+        loadCommandStatus();
+        registerCommands();
     }
 
     @Override
@@ -97,9 +120,12 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
 
             if (args[1].equalsIgnoreCase("all")) {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Reloading CmdPlus..."));
-                reloadPluginConfig();
+                config = getConfig();
+                ConfigSettings.reloadConfig();
                 cmdAliasHandler.reloadAliases();
                 cmdSignHandler.reloadSigns();
+                loadCommandStatus();
+                registerCommands();
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "CmdPlus &areloaded!"));
             } else if (args[1].equalsIgnoreCase("alias")) {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Reloading aliases..."));
@@ -111,7 +137,8 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Signs &areloaded!"));
             } else if (args[1].equalsIgnoreCase("config")) {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Reloading config..."));
-                reloadPluginConfig();
+                config = getConfig();
+                ConfigSettings.reloadConfig();
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Config &areloaded!"));
             } else {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Unknown reload target: " + args[1]));

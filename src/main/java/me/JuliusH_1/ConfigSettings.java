@@ -6,14 +6,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
 
-public class configsettings {
+public class ConfigSettings {
     private final JavaPlugin plugin;
     private long commandCooldown;
     private long cmdsignCooldown;
     private String pluginPrefix;
     private String language;
 
-    public configsettings(JavaPlugin plugin) {
+    public ConfigSettings(JavaPlugin plugin) {
         this.plugin = plugin;
         loadConfig();
     }

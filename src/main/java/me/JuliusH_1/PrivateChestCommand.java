@@ -23,24 +23,48 @@ public class PrivateChestCommand implements CommandExecutor, Listener {
     public PrivateChestCommand(JavaPlugin plugin) {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        new SignListener(plugin); // Register the SignListener
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (player.hasPermission("cmdplus.privatechest")) {
-                Inventory privateChest = privateChests.computeIfAbsent(player.getUniqueId(), k -> Bukkit.createInventory(null, 27, ChatColor.GREEN + "Private Chest"));
-                player.openInventory(privateChest);
-                return true;
-            } else {
-                player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
-                return false;
+            if (label.equalsIgnoreCase("pca")) {
+                if (args.length == 2 && args[0].equalsIgnoreCase("view")) {
+                    if (player.hasPermission("cmdplus.privatechest.admin")) {
+                        Player target = Bukkit.getPlayer(args[1]);
+                        if (target != null) {
+                            Inventory targetChest = privateChests.get(target.getUniqueId());
+                            if (targetChest != null) {
+                                player.openInventory(targetChest);
+                                player.sendMessage(ChatColor.GREEN + "You are now viewing " + target.getName() + "'s private chest.");
+                            } else {
+                                player.sendMessage(ChatColor.RED + "The player " + target.getName() + " does not have a private chest.");
+                            }
+                        } else {
+                            player.sendMessage(ChatColor.RED + "The player " + args[1] + " is not online.");
+                        }
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+                    }
+                    return true;
+                }
+            } else if (label.equalsIgnoreCase("pc")) {
+                if (player.hasPermission("cmdplus.privatechest")) {
+                    Inventory privateChest = privateChests.computeIfAbsent(player.getUniqueId(), k -> Bukkit.createInventory(null, 27, ChatColor.GREEN + "Private Chest"));
+                    player.openInventory(privateChest);
+                    return true;
+                } else {
+                    player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+                    return false;
+                }
             }
         } else {
             sender.sendMessage("This command can only be used by players.");
             return false;
         }
+        return false;
     }
 
     @EventHandler

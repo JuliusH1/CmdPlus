@@ -29,13 +29,13 @@ public class cmdalias implements CommandExecutor, TabCompleter {
     private FileConfiguration aliasesConfig;
     private File aliasesFile;
     private String pluginPrefix;
-    private configsettings configSettings;
+    private ConfigSettings ConfigSettings;
 
     public cmdalias(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.configSettings = new configsettings(plugin);
-        this.pluginPrefix = configSettings.getPluginPrefix();
-        loadMessages(configSettings.getLanguage());
+        this.ConfigSettings = new ConfigSettings(plugin);
+        this.pluginPrefix = ConfigSettings.getPluginPrefix();
+        loadMessages(ConfigSettings.getLanguage());
         loadAliasesConfig();
         reloadAliases();
     }
@@ -154,9 +154,9 @@ public class cmdalias implements CommandExecutor, TabCompleter {
             }
             return true;
         } else if (args[0].equalsIgnoreCase("reload") && args.length == 2 && args[1].equalsIgnoreCase("config")) {
-            configSettings.reloadConfig();
-            this.pluginPrefix = configSettings.getPluginPrefix();
-            loadMessages(configSettings.getLanguage());
+            ConfigSettings.reloadConfig();
+            this.pluginPrefix = ConfigSettings.getPluginPrefix();
+            loadMessages(ConfigSettings.getLanguage());
             sender.sendMessage(pluginPrefix + getMessage("plugin_reloaded"));
             return true;
         }

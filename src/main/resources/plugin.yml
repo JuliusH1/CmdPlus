@@ -14,3 +14,9 @@ commands:
     description: CmdPlus management
     usage: /cmdplus reload <alias/sign/config/all>
     permission: cmdplus.manage
+  trash:
+    description: Opens a trash bin to dispose of items
+  bin:
+    description: Opens a trash bin to dispose of items
+  privatechest:
+    description: Opens a private chest
