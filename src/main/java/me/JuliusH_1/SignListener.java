@@ -43,7 +43,7 @@ public class SignListener implements Listener {
                 event.setLine(1, ownerName);
                 player.sendMessage(pluginPrefix + ChatColor.GREEN + "Private chest sign created for " + ownerName);
             } else {
-                player.sendMessage(pluginPrefix + ChatColor.RED + "You must specify a player name on the second line.");
+                player.sendMessage(pluginPrefix + ChatColor.RED + "You must specify a player name on the second line!");
                 event.setCancelled(true);
             }
         }
