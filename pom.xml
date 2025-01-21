@@ -50,6 +50,27 @@
         </resources>
     </build>
 
+    <profiles>
+        <profile>
+            <id>local-towny</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <repositories>
+                <repository>
+                    <id>local-repo</id>
+                    <url>file://${user.home}/.m2/repository</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
     <repositories>
         <repository>
             <id>spigotmc-repo</id>
