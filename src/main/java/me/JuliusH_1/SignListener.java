@@ -51,7 +51,7 @@ public class SignListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
             Block block = event.getClickedBlock();
             if (block != null && (block.getType() == Material.CHEST || block.getType() == Material.TRAPPED_CHEST)) {
                 InventoryHolder holder = ((Chest) block.getState()).getInventory().getHolder();
@@ -68,17 +68,36 @@ public class SignListener implements Listener {
 
     private void checkChestAccess(PlayerInteractEvent event, Block block) {
         for (Block face : new Block[]{block.getRelative(0, 1, 0), block.getRelative(1, 0, 0), block.getRelative(-1, 0, 0), block.getRelative(0, 0, 1), block.getRelative(0, 0, -1)}) {
-            if (face.getType() == Material.OAK_SIGN || face.getType() == Material.OAK_WALL_SIGN) {
+            if (isSign(face.getType())) {
                 Sign sign = (Sign) face.getState();
                 if (sign.getLine(0).equals(ChatColor.GREEN + "[PrivateChest]")) {
                     String ownerName = sign.getLine(1);
+                    String additionalName1 = sign.getLine(2);
+                    String additionalName2 = sign.getLine(3);
                     Player player = event.getPlayer();
-                    if (!player.getName().equalsIgnoreCase(ownerName) && !player.hasPermission("cmdplus.privatechest.bypass")) {
+                    if (!player.getName().equalsIgnoreCase(ownerName) && !player.getName().equalsIgnoreCase(additionalName1) && !player.getName().equalsIgnoreCase(additionalName2) && !player.hasPermission("cmdplus.privatechest.bypass")) {
                         player.sendMessage(pluginPrefix + ChatColor.RED + "This chest is private and can only be opened by " + ownerName);
+                        event.setCancelled(true);
+                    } else if (event.getAction() == Action.LEFT_CLICK_BLOCK && !player.getName().equalsIgnoreCase(ownerName)) {
+                        player.sendMessage(pluginPrefix + ChatColor.RED + "Only the owner can remove this sign.");
                         event.setCancelled(true);
                     }
                 }
             }
         }
+    }
+
+    private boolean isSign(Material material) {
+        return material == Material.OAK_SIGN || material == Material.OAK_WALL_SIGN ||
+                material == Material.SPRUCE_SIGN || material == Material.SPRUCE_WALL_SIGN ||
+                material == Material.BIRCH_SIGN || material == Material.BIRCH_WALL_SIGN ||
+                material == Material.JUNGLE_SIGN || material == Material.JUNGLE_WALL_SIGN ||
+                material == Material.ACACIA_SIGN || material == Material.ACACIA_WALL_SIGN ||
+                material == Material.DARK_OAK_SIGN || material == Material.DARK_OAK_WALL_SIGN ||
+                material == Material.CRIMSON_SIGN || material == Material.CRIMSON_WALL_SIGN ||
+                material == Material.WARPED_SIGN || material == Material.WARPED_WALL_SIGN ||
+                material == Material.MANGROVE_SIGN || material == Material.MANGROVE_WALL_SIGN ||
+                material == Material.BAMBOO_SIGN || material == Material.BAMBOO_WALL_SIGN ||
+                material == Material.CHERRY_SIGN || material == Material.CHERRY_WALL_SIGN;
     }
 }
