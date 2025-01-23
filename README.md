@@ -6,7 +6,7 @@
 ### Features:
  - **[CmdAliases:](https://github.com/JuliusH1/CmdPlus/wiki/CmdAlias)** Create custom aliases for commands in the aliases.yml with permissions!
  - **[CmdSigns:](https://github.com/JuliusH1/CmdPlus/wiki/CmdSigns)** Create signs that run commands when right-clicked! 
- - **[Privatechest:]()** Put a sign on a chest with [Privatechest] and only you can open it!
+ - **[Privatechest:](https://github.com/JuliusH1/CmdPlus/wiki/PrivateChest)** Put a sign on a chest with [Privatechest] and only you can open it!
 
 ### Commands:
 - **/cmdplus reload <all/config/alias/sign>:** reloads the config/alias/sign or all of the plugin!
