@@ -4,10 +4,13 @@ import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.api.Economy;
 import net.ess3.api.MaxMoneyException;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -15,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -55,14 +59,26 @@ public class SellChestListener implements Listener {
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
         Player player = event.getPlayer();
-        Block block = event.getBlock().getRelative(event.getBlock().getFace(event.getBlock()));
-        if (event.getLine(0).equalsIgnoreCase("[sellchest]") && isChest(block.getType())) {
-            if (!player.hasPermission("sellchest.create")) {
-                player.sendMessage(pluginPrefix + " You do not have permission to create a SellChest.");
+        Block block = event.getBlock().getRelative(BlockFace.UP);
+        if (event.getLine(0).equalsIgnoreCase("[sellchest]")) {
+            if (event.getLine(1).isEmpty()) {
+                player.sendMessage(pluginPrefix + ChatColor.RED + " You must specify a name on the second line.");
                 event.setCancelled(true);
                 return;
             }
-            player.sendMessage(pluginPrefix + " SellChest created successfully!");
+            if (!isChest(block.getType())) {
+                player.sendMessage(pluginPrefix + ChatColor.RED + " There must be a chest below the sign.");
+                event.setCancelled(true);
+                return;
+            }
+            if (!player.hasPermission("sellchest.create")) {
+                player.sendMessage(pluginPrefix + ChatColor.RED + " You do not have permission to create a SellChest.");
+                event.setCancelled(true);
+                event.setLine(0, ChatColor.RED + "[sellchest]");
+                return;
+            }
+            event.setLine(0, ChatColor.GREEN + "[sellchest]");
+            player.sendMessage(pluginPrefix + ChatColor.GREEN + " SellChest created successfully!");
         }
     }
 
@@ -73,10 +89,24 @@ public class SellChestListener implements Listener {
             if (block != null && isSign(block.getType())) {
                 Sign sign = (Sign) block.getState();
                 if (sign.getLine(0).equalsIgnoreCase("[sellchest]")) {
-                    Block chestBlock = block.getRelative(((org.bukkit.material.Sign) sign.getData()).getAttachedFace());
+                    Block chestBlock = block.getRelative(((Directional) sign.getBlockData()).getFacing().getOppositeFace());
                     if (isChest(chestBlock.getType())) {
-                        sellItems(event.getPlayer(), (Chest) chestBlock.getState());
+                        sellItems(event.getPlayer(), (Chest) chestBlock.getState(), sign.getLine(1));
                     }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof Chest) {
+            Chest chest = (Chest) event.getClickedInventory().getHolder();
+            Block block = chest.getBlock().getRelative(BlockFace.UP);
+            if (isSign(block.getType())) {
+                Sign sign = (Sign) block.getState();
+                if (sign.getLine(0).equalsIgnoreCase("[sellchest]")) {
+                    Bukkit.getScheduler().runTask(plugin, () -> sellItems((Player) event.getWhoClicked(), chest, sign.getLine(1)));
                 }
             }
         }
@@ -100,7 +130,7 @@ public class SellChestListener implements Listener {
                 material == Material.CHERRY_SIGN || material == Material.CHERRY_WALL_SIGN;
     }
 
-    private void sellItems(Player player, Chest chest) {
+    private void sellItems(Player player, Chest chest, String targetPlayerName) {
         double totalValue = 0.0;
         for (ItemStack item : chest.getInventory().getContents()) {
             if (item != null && itemPrices.containsKey(item.getType())) {
@@ -110,10 +140,14 @@ public class SellChestListener implements Listener {
         }
         if (totalValue > 0) {
             try {
-                Economy.add(player.getName(), totalValue);
+                Economy.add(targetPlayerName, totalValue);
                 player.sendMessage(pluginPrefix + " Sold items for $" + totalValue);
             } catch (MaxMoneyException e) {
                 player.sendMessage(pluginPrefix + " You have reached the maximum amount of money.");
+            } catch (com.earth2me.essentials.api.UserDoesNotExistException e) {
+                player.sendMessage(pluginPrefix + " User does not exist.");
+            } catch (com.earth2me.essentials.api.NoLoanPermittedException e) {
+                player.sendMessage(pluginPrefix + " No loan permitted.");
             }
         } else {
             player.sendMessage(pluginPrefix + " No sellable items found in the chest.");

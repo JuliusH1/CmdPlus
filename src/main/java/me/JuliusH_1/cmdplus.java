@@ -60,9 +60,10 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
     }
 
     private void loadMessages() {
-        File messagesFile = new File(getDataFolder(), "messages.yml");
+        String lang = config.getString("Language", "en");
+        File messagesFile = new File(getDataFolder(), "lang/messages_" + lang + ".yml");
         if (!messagesFile.exists()) {
-            saveResource("messages.yml", false);
+            saveResource("lang/messages_" + lang + ".yml", false);
         }
         messages = YamlConfiguration.loadConfiguration(messagesFile);
     }

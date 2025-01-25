@@ -1,0 +1,17 @@
+# I recommend creating aliases here and not ingame as the permissions might not always work.
+# After creating a new aliases here save it and reload the plugin using /cmdplus reload alias/all
+
+Aliases:
+  example: #alias
+    command: help #Performed command
+    permission: commandalias.use.help #permission
+  # so when someone with the permission commandalias.use.help types /example it will perform the command /help.
+  spawn:
+    command: warp spawn
+    permission: commandalias.use.spawn
+  greet:
+    command: say Hello, everyone!
+    permission: commandalias.use.greet
+  crates:
+    command: warp crates
+    permission: commandalias.use.crates
