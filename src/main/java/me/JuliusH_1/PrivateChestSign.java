@@ -19,14 +19,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class SignListener implements Listener {
+public class PrivateChestSign implements Listener {
 
     private final JavaPlugin plugin;
     private final Map<UUID, String> privateChests = new HashMap<>();
     private ConfigSettings configSettings;
     private String pluginPrefix;
 
-    public SignListener(JavaPlugin plugin) {
+    public PrivateChestSign (JavaPlugin plugin) {
         this.plugin = plugin;
         this.configSettings = new ConfigSettings(plugin); // Initialize configSettings
         this.pluginPrefix = configSettings.getPluginPrefix();

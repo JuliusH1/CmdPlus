@@ -23,7 +23,7 @@ public class PrivateChestCommand implements CommandExecutor, Listener {
     public PrivateChestCommand(JavaPlugin plugin) {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        new SignListener(plugin); // Register the SignListener
+        new PrivateChestSign(plugin); // Register the SignListener
     }
 
     @Override
