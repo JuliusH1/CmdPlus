@@ -12,12 +12,6 @@ Aliases:
   greet:
     command: say Hello, everyone!
     permission: commandalias.use.greet
-  lobby:
-    command: server lobby
-    permission: commandalias.use.lobby
-  hub:
-    command: server lobby
-    permission: commandalias.use.hub
   crates:
     command: warp crates
     permission: commandalias.use.crates

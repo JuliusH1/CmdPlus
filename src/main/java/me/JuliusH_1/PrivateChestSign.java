@@ -78,7 +78,7 @@ public class PrivateChestSign implements Listener {
                     if (!player.getName().equalsIgnoreCase(ownerName) && !player.getName().equalsIgnoreCase(additionalName1) && !player.getName().equalsIgnoreCase(additionalName2) && !player.hasPermission("cmdplus.privatechest.bypass")) {
                         player.sendMessage(pluginPrefix + ChatColor.RED + "This chest is private and can only be opened by " + ownerName);
                         event.setCancelled(true);
-                    } else if (event.getAction() == Action.LEFT_CLICK_BLOCK && !player.getName().equalsIgnoreCase(ownerName)) {
+                    } else if (event.getAction() == Action.LEFT_CLICK_BLOCK && !player.getName().equalsIgnoreCase(ownerName) && !player.hasPermission("cmdplus.privatechest.bypass")) {
                         player.sendMessage(pluginPrefix + ChatColor.RED + "Only the owner can remove this sign.");
                         event.setCancelled(true);
                     }

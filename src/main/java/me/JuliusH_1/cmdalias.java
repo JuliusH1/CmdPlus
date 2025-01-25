@@ -29,15 +29,17 @@ public class cmdalias implements CommandExecutor, TabCompleter {
     private FileConfiguration aliasesConfig;
     private File aliasesFile;
     private String pluginPrefix;
-    private ConfigSettings ConfigSettings;
+    private ConfigSettings configSettings;
 
     public cmdalias(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.ConfigSettings = new ConfigSettings(plugin);
-        this.pluginPrefix = ConfigSettings.getPluginPrefix();
-        loadMessages(ConfigSettings.getLanguage());
+        this.configSettings = new ConfigSettings(plugin);
+        this.pluginPrefix = configSettings.getPluginPrefix();
+        loadMessages(configSettings.getLanguage());
         loadAliasesConfig();
         reloadAliases();
+        plugin.getCommand("cmdalias").setExecutor(this);
+        plugin.getCommand("cmdalias").setTabCompleter(this);
     }
 
     private void loadMessages(String language) {
@@ -117,16 +119,12 @@ public class cmdalias implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        plugin.getLogger().info("onCommand called with args: " + Arrays.toString(args));
-
         if (args.length < 1) {
             sender.sendMessage(pluginPrefix + getMessage("cmdalias_usage"));
             return true;
         }
 
         if (args[0].equalsIgnoreCase("create")) {
-            plugin.getLogger().info("Create command detected");
-
             if (args.length < 3) {
                 sender.sendMessage(pluginPrefix + getMessage("cmdalias_create_usage"));
                 return true;
@@ -146,17 +144,15 @@ public class cmdalias implements CommandExecutor, TabCompleter {
 
             return true;
         } else if (args[0].equalsIgnoreCase("list")) {
-            plugin.getLogger().info("List command detected");
-
             sender.sendMessage(pluginPrefix + getMessage("alias_list_header"));
             for (String alias : aliases.keySet()) {
                 sender.sendMessage("- " + alias);
             }
             return true;
         } else if (args[0].equalsIgnoreCase("reload") && args.length == 2 && args[1].equalsIgnoreCase("config")) {
-            ConfigSettings.reloadConfig();
-            this.pluginPrefix = ConfigSettings.getPluginPrefix();
-            loadMessages(ConfigSettings.getLanguage());
+            configSettings.reloadConfig();
+            this.pluginPrefix = configSettings.getPluginPrefix();
+            loadMessages(configSettings.getLanguage());
             sender.sendMessage(pluginPrefix + getMessage("plugin_reloaded"));
             return true;
         }

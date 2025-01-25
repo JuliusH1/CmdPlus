@@ -32,6 +32,7 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
         ConfigSettings = new ConfigSettings(this);
         cmdAliasHandler = new cmdalias(this);
         cmdSignHandler = new cmdsign(this);
+        new CommandPreprocessListener(this);
         saveDefaultLangFiles();
         loadMessages();
         loadCommandStatus();
