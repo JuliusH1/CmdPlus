@@ -113,7 +113,9 @@ public class cmdalias implements CommandExecutor, TabCompleter {
         loadAliasesConfig();
         aliasesConfig.getConfigurationSection("Aliases").getKeys(false).forEach(aliasName -> {
             String command = aliasesConfig.getString("Aliases." + aliasName + ".command");
+            String permission = aliasesConfig.getString("Aliases." + aliasName + ".permission");
             aliases.put(aliasName.toLowerCase(), command);
+            registerAliasCommand(aliasName, permission);
         });
     }
 
@@ -149,12 +151,6 @@ public class cmdalias implements CommandExecutor, TabCompleter {
                 sender.sendMessage("- " + alias);
             }
             return true;
-        } else if (args[0].equalsIgnoreCase("reload") && args.length == 2 && args[1].equalsIgnoreCase("config")) {
-            configSettings.reloadConfig();
-            this.pluginPrefix = configSettings.getPluginPrefix();
-            loadMessages(configSettings.getLanguage());
-            sender.sendMessage(pluginPrefix + getMessage("plugin_reloaded"));
-            return true;
         }
 
         sender.sendMessage(pluginPrefix + getMessage("unknown_subcommand"));
@@ -187,7 +183,7 @@ public class cmdalias implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("create", "list", "reload");
+            return Arrays.asList("create", "list");
         }
         if (args[0].equalsIgnoreCase("create") && args.length == 2) {
             return Collections.emptyList();
