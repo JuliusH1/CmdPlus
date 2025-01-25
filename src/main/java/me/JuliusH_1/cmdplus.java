@@ -39,6 +39,9 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
         registerCommands();
         getCommand("cmdplus").setTabCompleter(this);
 
+        // Register SellChestListener
+        getServer().getPluginManager().registerEvents(new SellChestListener(this), this);
+
         // Translate color codes in the plugin prefix
         String translatedPrefix = ChatColor.translateAlternateColorCodes('&', ConfigSettings.getPluginPrefix());
         Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "===============================");
