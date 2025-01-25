@@ -132,7 +132,8 @@ public class SellChestListener implements Listener {
 
     private void sellItems(Player player, Chest chest, String targetPlayerName) {
         double totalValue = 0.0;
-        for (ItemStack item : chest.getInventory().getContents()) {
+        ItemStack[] contents = chest.getInventory().getContents();
+        for (ItemStack item : contents) {
             if (item != null && itemPrices.containsKey(item.getType())) {
                 totalValue += itemPrices.get(item.getType()) * item.getAmount();
                 chest.getInventory().remove(item);

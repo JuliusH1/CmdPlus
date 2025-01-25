@@ -17,3 +17,4 @@
 ### Permissions:
 - **CmdSigns:** cmdsign.use to create signs and cmdsign.edit to edit.
 - **CmdAliases:** commandalias.use.<alias> to use this alias. You can set this to something else but I recommend using commandalias.use.<youralias> .
+- **Privatechest:** privatechest to use the private chest and cmdplus.privatechest.bypass and cmdplus.privatechest.admin to bypass the private chest/view someone's privatechest.
