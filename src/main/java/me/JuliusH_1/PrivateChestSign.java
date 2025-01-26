@@ -53,8 +53,8 @@ public class PrivateChestSign implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
             Block block = event.getClickedBlock();
-            if (block != null && (block.getType() == Material.CHEST || block.getType() == Material.TRAPPED_CHEST)) {
-                InventoryHolder holder = ((Chest) block.getState()).getInventory().getHolder();
+            if (block != null && isChest(block.getType())) {
+                InventoryHolder holder = (InventoryHolder) block.getState();
                 if (holder instanceof DoubleChest) {
                     DoubleChest doubleChest = (DoubleChest) holder;
                     checkChestAccess(event, doubleChest.getLeftSide().getInventory().getLocation().getBlock());
@@ -99,5 +99,9 @@ public class PrivateChestSign implements Listener {
                 material == Material.MANGROVE_SIGN || material == Material.MANGROVE_WALL_SIGN ||
                 material == Material.BAMBOO_SIGN || material == Material.BAMBOO_WALL_SIGN ||
                 material == Material.CHERRY_SIGN || material == Material.CHERRY_WALL_SIGN;
+    }
+    private boolean isChest(Material material) {
+        return material == Material.CHEST || material == Material.TRAPPED_CHEST ||
+                material == Material.BARREL || material.name().endsWith("_SHULKER_BOX");
     }
 }

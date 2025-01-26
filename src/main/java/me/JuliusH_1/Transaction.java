@@ -11,15 +11,20 @@ public class Transaction {
         this.timestamp = timestamp;
     }
 
-    public String getPlayerName() {
-        return playerName;
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "playerName='" + playerName + '\'' +
+                ", amount=" + amount +
+                ", timestamp=" + timestamp +
+                '}';
     }
-
     public double getAmount() {
         return amount;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public String getFormattedTimestamp() {
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(new java.util.Date(timestamp));
     }
 }

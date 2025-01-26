@@ -39,6 +39,14 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
         registerCommands();
         getCommand("cmdplus").setTabCompleter(this);
 
+        // Initialize EconomyManager
+        if (!EconomyManager.setupEconomy(this)) {
+            getLogger().severe("Disabling plugin due to no economy system found.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        getLogger().info("Economy system found and integrated.");
+
         // Register SellChestListener
         getServer().getPluginManager().registerEvents(new SellChestListener(this), this);
 

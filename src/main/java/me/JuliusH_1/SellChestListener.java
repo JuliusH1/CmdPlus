@@ -1,8 +1,6 @@
 package me.JuliusH_1;
 
-import com.earth2me.essentials.Essentials;
-import com.earth2me.essentials.api.Economy;
-import net.ess3.api.MaxMoneyException;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -29,28 +27,18 @@ import java.util.*;
 public class SellChestListener implements Listener {
 
     private final JavaPlugin plugin;
-    private final Essentials essentials;
     private final Map<Material, Double> itemPrices = new HashMap<>();
     private final Map<UUID, List<Transaction>> transactionHistory = new HashMap<>();
     private String pluginPrefix;
 
     public SellChestListener(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.essentials = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
-        if (this.essentials == null) {
-            plugin.getLogger().severe("Essentials plugin not found!");
-            return;
-        }
-        plugin.getLogger().info("Essentials plugin found and loaded.");
         this.pluginPrefix = plugin.getConfig().getString("pluginPrefix", "[SellChest]");
         loadPrices();
         Bukkit.getPluginManager().registerEvents(this, plugin);
         plugin.getLogger().info("SellChestListener registered.");
     }
 
-    /**
-     * Loads the item prices from prices.yml.
-     */
     private void loadPrices() {
         File pricesFile = new File(plugin.getDataFolder(), "prices.yml");
         if (!pricesFile.exists()) {
@@ -70,9 +58,6 @@ public class SellChestListener implements Listener {
         }
     }
 
-    /**
-     * Handles the creation of a SellChest sign.
-     */
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
         Player player = event.getPlayer();
@@ -105,9 +90,6 @@ public class SellChestListener implements Listener {
         player.sendMessage(pluginPrefix + ChatColor.GREEN + " SellChest created successfully!");
     }
 
-    /**
-     * Handles player interactions with SellChest signs.
-     */
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -125,9 +107,6 @@ public class SellChestListener implements Listener {
         }
     }
 
-    /**
-     * Handles inventory clicks inside SellChest chests.
-     */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof Chest) {
@@ -143,47 +122,50 @@ public class SellChestListener implements Listener {
         }
     }
 
-    /**
-     * Checks if the given material is a chest.
-     */
     private boolean isChest(Material material) {
         return material == Material.CHEST || material == Material.TRAPPED_CHEST;
     }
 
-    /**
-     * Checks if the given material is a sign.
-     */
     private boolean isSign(Material material) {
         return material.name().endsWith("_SIGN") || material.name().endsWith("_WALL_SIGN");
     }
 
-    /**
-     * Handles selling items from the chest.
-     */
     private void sellItems(Player player, Chest chest, String targetPlayerName) {
         double totalValue = 0.0;
         ItemStack[] contents = chest.getInventory().getContents();
         plugin.getLogger().info("Starting to process chest contents for selling.");
 
-        for (ItemStack item : contents) {
-            if (item != null && itemPrices.containsKey(item.getType())) {
-                double itemPrice = itemPrices.get(item.getType());
-                int itemAmount = item.getAmount();
-                totalValue += itemPrice * itemAmount;
-                chest.getInventory().remove(item); // Remove items from chest
-                plugin.getLogger().info("Sold " + item.getAmount() + "x " + item.getType() + " for $" + (itemPrice * itemAmount));
+        try {
+            for (ItemStack item : contents) {
+                if (item != null && itemPrices.containsKey(item.getType())) {
+                    double itemPrice = itemPrices.get(item.getType());
+                    int itemAmount = item.getAmount();
+                    totalValue += itemPrice * itemAmount;
+                    chest.getInventory().remove(item); // Remove items from chest
+                    plugin.getLogger().info("Sold " + item.getAmount() + "x " + item.getType() + " for $" + (itemPrice * itemAmount));
+                }
             }
+        } catch (Exception e) {
+            plugin.getLogger().severe("Error processing chest contents: " + e.getMessage());
+            player.sendMessage(pluginPrefix + ChatColor.RED + " An error occurred while processing the chest contents.");
+            return;
         }
 
         if (totalValue > 0) {
             try {
-                Economy.add(targetPlayerName, totalValue);
-                player.sendMessage(pluginPrefix + " Sold items for $" + totalValue);
-                plugin.getLogger().info("Added $" + totalValue + " to " + targetPlayerName);
-                logTransaction(player, totalValue);
+                Economy economy = EconomyManager.getEconomy();
+                if (economy != null) {
+                    economy.depositPlayer(targetPlayerName, totalValue);
+                    player.sendMessage(pluginPrefix + " Sold items for $" + totalValue);
+                    plugin.getLogger().info("Added $" + totalValue + " to " + targetPlayerName);
+                    logTransaction(player, totalValue);
+                } else {
+                    player.sendMessage(pluginPrefix + " No economy provider found.");
+                    plugin.getLogger().severe("No economy provider found.");
+                }
             } catch (Exception e) {
-                player.sendMessage(pluginPrefix + " Transaction failed: " + e.getMessage());
-                plugin.getLogger().severe("Transaction failed: " + e.getMessage());
+                plugin.getLogger().severe("Error during transaction: " + e.getMessage());
+                player.sendMessage(pluginPrefix + ChatColor.RED + " An error occurred during the transaction.");
             }
         } else {
             player.sendMessage(pluginPrefix + " No sellable items found in the chest.");
