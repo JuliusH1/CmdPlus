@@ -48,12 +48,17 @@ public class SellChestListener implements Listener {
         plugin.getLogger().info("SellChestListener registered.");
     }
 
+    /**
+     * Loads the item prices from prices.yml.
+     */
     private void loadPrices() {
         File pricesFile = new File(plugin.getDataFolder(), "prices.yml");
         if (!pricesFile.exists()) {
             plugin.saveResource("prices.yml", false);
         }
         FileConfiguration pricesConfig = YamlConfiguration.loadConfiguration(pricesFile);
+        itemPrices.clear(); // Clear existing prices to ensure no duplication
+
         for (String key : pricesConfig.getKeys(false)) {
             Material material = Material.getMaterial(key.toUpperCase());
             if (material != null) {
@@ -65,6 +70,9 @@ public class SellChestListener implements Listener {
         }
     }
 
+    /**
+     * Handles the creation of a SellChest sign.
+     */
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
         Player player = event.getPlayer();
@@ -97,6 +105,9 @@ public class SellChestListener implements Listener {
         player.sendMessage(pluginPrefix + ChatColor.GREEN + " SellChest created successfully!");
     }
 
+    /**
+     * Handles player interactions with SellChest signs.
+     */
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -114,6 +125,9 @@ public class SellChestListener implements Listener {
         }
     }
 
+    /**
+     * Handles inventory clicks inside SellChest chests.
+     */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof Chest) {
@@ -129,49 +143,50 @@ public class SellChestListener implements Listener {
         }
     }
 
+    /**
+     * Checks if the given material is a chest.
+     */
     private boolean isChest(Material material) {
         return material == Material.CHEST || material == Material.TRAPPED_CHEST;
     }
 
+    /**
+     * Checks if the given material is a sign.
+     */
     private boolean isSign(Material material) {
         return material.name().endsWith("_SIGN") || material.name().endsWith("_WALL_SIGN");
     }
 
+    /**
+     * Handles selling items from the chest.
+     */
     private void sellItems(Player player, Chest chest, String targetPlayerName) {
         double totalValue = 0.0;
         ItemStack[] contents = chest.getInventory().getContents();
         plugin.getLogger().info("Starting to process chest contents for selling.");
 
-        for (int i = 0; i < contents.length; i++) {
-            ItemStack item = contents[i];
-            if (item != null) {
-                plugin.getLogger().info("Processing item: " + item.getType() + " x" + item.getAmount());
-                if (itemPrices.containsKey(item.getType())) {
-                    double itemPrice = itemPrices.get(item.getType());
-                    int itemAmount = item.getAmount();
-                    totalValue += itemPrice * itemAmount;
-                    chest.getInventory().setItem(i, null); // Remove the item from the chest
-                    plugin.getLogger().info("Removed item: " + item.getType() + " x" + itemAmount);
-                } else {
-                    plugin.getLogger().info("Item not priced: " + item.getType());
-                }
+        for (ItemStack item : contents) {
+            if (item != null && itemPrices.containsKey(item.getType())) {
+                double itemPrice = itemPrices.get(item.getType());
+                int itemAmount = item.getAmount();
+                totalValue += itemPrice * itemAmount;
+                chest.getInventory().remove(item); // Remove items from chest
+                plugin.getLogger().info("Sold " + item.getAmount() + "x " + item.getType() + " for $" + (itemPrice * itemAmount));
             }
         }
 
-        plugin.getLogger().info("Total value of sold items: $" + totalValue);
         if (totalValue > 0) {
             try {
                 Economy.add(targetPlayerName, totalValue);
                 player.sendMessage(pluginPrefix + " Sold items for $" + totalValue);
                 plugin.getLogger().info("Added $" + totalValue + " to " + targetPlayerName);
                 logTransaction(player, totalValue);
-            } catch (MaxMoneyException | com.earth2me.essentials.api.UserDoesNotExistException | com.earth2me.essentials.api.NoLoanPermittedException e) {
+            } catch (Exception e) {
                 player.sendMessage(pluginPrefix + " Transaction failed: " + e.getMessage());
                 plugin.getLogger().severe("Transaction failed: " + e.getMessage());
             }
         } else {
             player.sendMessage(pluginPrefix + " No sellable items found in the chest.");
-            plugin.getLogger().info("No sellable items found in the chest.");
         }
     }
 
@@ -179,9 +194,5 @@ public class SellChestListener implements Listener {
         UUID playerId = player.getUniqueId();
         transactionHistory.putIfAbsent(playerId, new ArrayList<>());
         transactionHistory.get(playerId).add(new Transaction(player.getName(), amount, System.currentTimeMillis()));
-    }
-
-    public List<Transaction> getTransactionHistory(Player player) {
-        return transactionHistory.getOrDefault(player.getUniqueId(), Collections.emptyList());
     }
 }
