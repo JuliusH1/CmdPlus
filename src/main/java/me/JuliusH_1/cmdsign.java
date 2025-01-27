@@ -62,9 +62,11 @@ public class cmdsign implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
+        Player player = event.getPlayer();
+        ItemStack itemInHand = player.getInventory().getItemInMainHand();
+
         if (block != null && isSign(block.getType())) {
             Sign sign = (Sign) block.getState();
-            Player player = event.getPlayer();
 
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 if (sign.getLine(0).equalsIgnoreCase("[cmd]")) {
@@ -117,9 +119,61 @@ public class cmdsign implements Listener {
                         pendingRemovals.put(playerId, signLocation);
                         player.sendMessage(pluginPrefix + getMessage("confirm_remove_cmdsign"));
                     }
+                } else if (player.isSneaking()) {
+                    if (isDye(itemInHand.getType())) {
+                        applyColorToSign(sign, itemInHand.getType());
+                        player.sendMessage(pluginPrefix + ChatColor.GREEN + "Sign color updated!");
+                        event.setCancelled(true);
+                    } else if (itemInHand.getType() == Material.INK_SAC) {
+                        resetSignColor(sign);
+                        player.sendMessage(pluginPrefix + ChatColor.GREEN + "Sign color reset!");
+                        event.setCancelled(true);
+                    }
                 }
             }
         }
+    }
+
+    private boolean isDye(Material material) {
+        return material.name().endsWith("_DYE") || material == Material.GLOW_INK_SAC;
+    }
+
+    private void applyColorToSign(Sign sign, Material dye) {
+        ChatColor color = getColorFromDye(dye);
+        for (int i = 0; i < sign.getLines().length; i++) {
+            sign.setLine(i, color + ChatColor.stripColor(sign.getLine(i)));
+        }
+        sign.update();
+    }
+
+    private ChatColor getColorFromDye(Material dye) {
+        switch (dye) {
+            case WHITE_DYE: return ChatColor.WHITE;
+            case ORANGE_DYE: return ChatColor.GOLD;
+            case MAGENTA_DYE: return ChatColor.LIGHT_PURPLE;
+            case LIGHT_BLUE_DYE: return ChatColor.AQUA;
+            case YELLOW_DYE: return ChatColor.YELLOW;
+            case LIME_DYE: return ChatColor.GREEN;
+            case PINK_DYE: return ChatColor.LIGHT_PURPLE;
+            case GRAY_DYE: return ChatColor.DARK_GRAY;
+            case LIGHT_GRAY_DYE: return ChatColor.GRAY;
+            case CYAN_DYE: return ChatColor.DARK_AQUA;
+            case PURPLE_DYE: return ChatColor.DARK_PURPLE;
+            case BLUE_DYE: return ChatColor.BLUE;
+            case BROWN_DYE: return ChatColor.GOLD;
+            case GREEN_DYE: return ChatColor.DARK_GREEN;
+            case RED_DYE: return ChatColor.RED;
+            case BLACK_DYE: return ChatColor.BLACK;
+            case GLOW_INK_SAC: return ChatColor.BOLD; // Example: using bold for glow ink sac
+            default: return ChatColor.WHITE;
+        }
+    }
+
+    private void resetSignColor(Sign sign) {
+        for (int i = 0; i < sign.getLines().length; i++) {
+            sign.setLine(i, ChatColor.stripColor(sign.getLine(i)));
+        }
+        sign.update();
     }
 
     @EventHandler
@@ -166,6 +220,22 @@ public class cmdsign implements Listener {
             return signTown != null && playerTown != null && !signTown.equals(playerTown);
         }
         return false;
+    }
+
+    private void displayCooldown(Player player, long remainingTime) {
+        long seconds = (remainingTime / 1000) % 60;
+        long minutes = (remainingTime / (1000 * 60)) % 60;
+        long hours = (remainingTime / (1000 * 60 * 60)) % 24;
+        player.sendMessage(pluginPrefix + ChatColor.RED + "You must wait " + hours + "h " + minutes + "m " + seconds + "s before using this sign again.");
+    }
+
+
+    private void sendCommandFeedback(Player player, boolean success) {
+        if (success) {
+            player.sendMessage(pluginPrefix + ChatColor.GREEN + "Command executed successfully!");
+        } else {
+            player.sendMessage(pluginPrefix + ChatColor.RED + "Failed to execute the command.");
+        }
     }
 
     public void saveSign(Sign sign) {

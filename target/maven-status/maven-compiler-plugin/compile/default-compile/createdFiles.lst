@@ -4,9 +4,11 @@ me\JuliusH_1\Transaction.class
 me\JuliusH_1\PrivateChestSign.class
 me\JuliusH_1\cmdalias.class
 me\JuliusH_1\cmdsign$SignData.class
+me\JuliusH_1\EconomyManager.class
 me\JuliusH_1\cmdplus.class
 me\JuliusH_1\TrashCommand.class
 me\JuliusH_1\CommandPreprocessListener.class
+me\JuliusH_1\cmdsign$1.class
 me\JuliusH_1\PrivateChestCommand.class
 me\JuliusH_1\ConfigSettings.class
 me\JuliusH_1\cmdsign.class
