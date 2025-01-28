@@ -24,6 +24,7 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
     private cmdalias cmdAliasHandler;
     private cmdsign cmdSignHandler;
     private Map<String, Boolean> commandStatus = new HashMap<>();
+    private CmdBlocker cmdBlocker;
 
     @Override
     public void onEnable() {
@@ -49,6 +50,10 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
 
         // Register SellChestListener
         getServer().getPluginManager().registerEvents(new SellChestListener(this), this);
+
+        // Initialize CmdBlocker
+        cmdBlocker = new CmdBlocker(this);
+        getServer().getPluginManager().registerEvents(new CommandBlockerTabCompleter(cmdBlocker), this);
 
         // Translate color codes in the plugin prefix
         String translatedPrefix = ChatColor.translateAlternateColorCodes('&', ConfigSettings.getPluginPrefix());
