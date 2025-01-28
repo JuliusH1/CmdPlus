@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Date;
 
 public class cmdsign implements Listener {
 
@@ -97,8 +100,10 @@ public class cmdsign implements Listener {
                         String subCommand1 = sign.getLine(2);
                         String subCommand2 = sign.getLine(3);
                         String fullCommand = command + " " + subCommand1 + " " + subCommand2;
-                        player.performCommand(fullCommand);
+                        boolean success = player.performCommand(fullCommand);
+                        sendCommandFeedback(player, success);
                         cooldowns.put(playerId, currentTime);
+                        logSignAction(success ? "Used" : "Failed to use", player, sign);
                         event.setCancelled(true);
                     }
                 }
@@ -112,6 +117,7 @@ public class cmdsign implements Listener {
                             block.breakNaturally(new ItemStack(Material.AIR));
                             pendingRemovals.remove(playerId);
                             player.sendMessage(pluginPrefix + getMessage("cmdsign_removed"));
+                            logSignAction("Removed", player, sign);
                         } else {
                             player.sendMessage(pluginPrefix + getMessage("no_permission_to_break"));
                         }
@@ -188,11 +194,12 @@ public class cmdsign implements Listener {
             String subCommand1 = event.getLine(2);
             String subCommand2 = event.getLine(3);
             String fullCommand = command + " " + subCommand1 + " " + subCommand2;
-            boolean success = player.performCommand(fullCommand);
-            if (success) {
+            if (Bukkit.getServer().getPluginCommand(fullCommand.split(" ")[0]) != null) {
                 player.sendMessage(pluginPrefix + "CmdSign successfully created!");
+                logSignAction("Created", player, (Sign) event.getBlock().getState());
             } else {
                 player.sendMessage(pluginPrefix + "CmdSign failed to create!");
+                logSignAction("Failed to create", player, (Sign) event.getBlock().getState());
             }
         }
     }
@@ -235,6 +242,15 @@ public class cmdsign implements Listener {
             player.sendMessage(pluginPrefix + ChatColor.GREEN + "Command executed successfully!");
         } else {
             player.sendMessage(pluginPrefix + ChatColor.RED + "Failed to execute the command.");
+        }
+    }
+
+    private void logSignAction(String action, Player player, Sign sign) {
+        File logFile = new File(plugin.getDataFolder(), "cmdsignlogs.txt");
+        try (FileWriter writer = new FileWriter(logFile, true)) {
+            writer.write("[" + new Date() + "] " + action + " by " + player.getName() + " at " + sign.getLocation() + "\n");
+        } catch (IOException e) {
+            plugin.getLogger().severe("Failed to log sign action: " + e.getMessage());
         }
     }
 
