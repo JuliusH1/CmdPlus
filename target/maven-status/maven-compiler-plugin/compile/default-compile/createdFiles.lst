@@ -1,5 +1,6 @@
 me\JuliusH_1\CmdPlusTabCompleter.class
 me\JuliusH_1\cmdalias$1.class
+me\JuliusH_1\CmdBlocker.class
 me\JuliusH_1\Transaction.class
 me\JuliusH_1\PrivateChestSign.class
 me\JuliusH_1\cmdalias.class
@@ -12,4 +13,5 @@ me\JuliusH_1\cmdsign$1.class
 me\JuliusH_1\PrivateChestCommand.class
 me\JuliusH_1\ConfigSettings.class
 me\JuliusH_1\cmdsign.class
+me\JuliusH_1\CommandBlockerTabCompleter.class
 me\JuliusH_1\SellChestListener.class
