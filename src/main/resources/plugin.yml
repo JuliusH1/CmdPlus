@@ -1,6 +1,7 @@
 name: CmdPlus
 version: 1.0
 main: me.JuliusH_1.cmdplus
+softdepend: [PlaceholderAPI]
 api-version: 1.21
 authors: [ JuliusH_1 | Owner VoidCraft Network ]
 description: Create custom command aliases command signs and much much more!
@@ -14,6 +15,12 @@ commands:
     description: CmdPlus management
     usage: /cmdplus reload <alias/sign/config/all>
     permission: cmdplus.manage
+  ban:
+    description: Bans a player
+  mute:
+    description: Mutes a player
+  kick:
+    description: Kicks a player
   trash:
     description: Opens a trash bin to dispose of items
   bin:

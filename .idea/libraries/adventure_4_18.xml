@@ -1,0 +1,38 @@
+<component name="libraryTable">
+  <library name="adventure-4.18">
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/annotation-processors/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/api/src/jmh/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/api/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/api/src/test/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/key/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/key/src/test/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/nbt/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/nbt/src/test/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/serializer-configurate4/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/serializer-configurate4/src/test/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-logger-slf4j/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-logger-slf4j/src/main/java9" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-logger-slf4j/src/test/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-minimessage/src/jmh/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-minimessage/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-minimessage/src/test/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-serializer-ansi/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-serializer-ansi/src/test/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-serializer-gson-legacy-impl/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-serializer-gson/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-serializer-gson/src/test/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-serializer-json-legacy-impl/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-serializer-json/src/jmh/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-serializer-json/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-serializer-json/src/testFixtures/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-serializer-legacy/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-serializer-legacy/src/test/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-serializer-plain/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-4.18.0/adventure-4.18.0/text-serializer-plain/src/test/java" />
+    </SOURCES>
+  </library>
+</component>

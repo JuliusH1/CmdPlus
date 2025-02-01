@@ -12,6 +12,7 @@ public class ConfigSettings {
     private long cmdsignCooldown;
     private String pluginPrefix;
     private String language;
+    private FileConfiguration config;
 
     public ConfigSettings(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -19,7 +20,7 @@ public class ConfigSettings {
     }
 
     private void loadConfig() {
-        FileConfiguration config = plugin.getConfig();
+        config = plugin.getConfig();
         commandCooldown = parseCooldown(config.getString("settings.cmd_cooldown", "1s"));
         cmdsignCooldown = parseCooldown(config.getString("settings.cmdsign_cooldown", "10s"));
         pluginPrefix = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("settings.plugin_prefix")));
@@ -65,5 +66,13 @@ public class ConfigSettings {
 
     public String getLanguage() {
         return language;
+    }
+
+    public boolean isJoinMessageEnabled() {
+        return config.getBoolean("Settings.JoinMessage", true);
+    }
+
+    public boolean isLeaveMessageEnabled() {
+        return config.getBoolean("Settings.LeaveMessage", true);
     }
 }

@@ -1,0 +1,24 @@
+Settings:
+  JoinMessage: true
+  LeaveMessage: true
+
+# gradients not working yet
+Messages:
+  ban_message: "<gradient:#ff0000:#0000ff>{player} ʜᴀꜱ ʙᴇᴇɴ ʙᴀɴɴᴇᴅ ꜰᴏʀ {reason}.</gradient>"
+  mute_message: "<gradient:#ff0000:#0000ff>{player} ʜᴀꜱ ʙᴇᴇɴ ᴍᴜᴛᴇᴅ ꜰᴏʀ {reason}.</gradient>"
+  kick_message: "<gradient:#ff0000:#0000ff>{player} ʜᴀꜱ ʙᴇᴇɴ ᴋɪᴄᴋᴇᴅ ꜰᴏʀ {reason}.</gradient>"
+  join_message: "<gradient:#00ff00:#0000ff>&7[&e+&7]{player} ᴊᴏɪɴᴇᴅ ᴛʜᴇ ꜱᴇʀᴠᴇʀ!</gradient>"
+  leave_message: "<gradient:#ff0000:#0000ff>&7[&c-&7]{player} ʟᴇꜰᴛ ᴛʜᴇ ꜱᴇʀᴠᴇʀ!</gradient>"
+
+# WORK IN PROCESS NOT WORKING YET!!
+announcements:
+  time: 15 # time between every announcement in minutes
+  random: true # if true, the announcements will be sent in a random order
+  1:
+    message:
+      - "<gradient:#ff0000:#0000ff>VoidCraft Network</gradient>"
+      - "<gradient:#ff0000:#0000ff>Join our discord at discord.gg/voidcraft</gradient>"
+
+  2:
+    message:
+      - "test"

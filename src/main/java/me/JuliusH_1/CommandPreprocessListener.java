@@ -13,13 +13,20 @@ import java.io.File;
 public class CommandPreprocessListener implements Listener {
 
     private final JavaPlugin plugin;
-    private final FileConfiguration commandsConfig;
+    private FileConfiguration commandsConfig;
 
     public CommandPreprocessListener(JavaPlugin plugin) {
         this.plugin = plugin;
-        File commandsFile = new File(plugin.getDataFolder(), "commands.yml");
-        this.commandsConfig = YamlConfiguration.loadConfiguration(commandsFile);
+        reloadCommandsConfig();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    public void reloadCommandsConfig() {
+        File commandsFile = new File(plugin.getDataFolder(), "commands.yml");
+        if (!commandsFile.exists()) {
+            plugin.saveResource("commands.yml", false);
+        }
+        commandsConfig = YamlConfiguration.loadConfiguration(commandsFile);
     }
 
     @EventHandler

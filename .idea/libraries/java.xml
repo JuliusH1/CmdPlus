@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="java">
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$USER_HOME$/Downloads/adventure-platform-4.3.4/adventure-platform-4.3.4/api/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-platform-4.3.4/adventure-platform-4.3.4/platform-bukkit/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-platform-4.3.4/adventure-platform-4.3.4/platform-bungeecord/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-platform-4.3.4/adventure-platform-4.3.4/platform-facet/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-platform-4.3.4/adventure-platform-4.3.4/platform-spongeapi/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-platform-4.3.4/adventure-platform-4.3.4/platform-viaversion/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-platform-4.3.4/adventure-platform-4.3.4/text-serializer-bungeecord/src/main/java" />
+      <root url="file://$USER_HOME$/Downloads/adventure-platform-4.3.4/adventure-platform-4.3.4/text-serializer-legacy-text3/src/main/java" />
+    </SOURCES>
+  </library>
+</component>

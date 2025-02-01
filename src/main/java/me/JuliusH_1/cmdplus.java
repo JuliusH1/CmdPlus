@@ -1,5 +1,6 @@
 package me.JuliusH_1;
 
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -10,32 +11,54 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class cmdplus extends JavaPlugin implements TabCompleter {
-
+    private FileConfiguration chatConfig;
+    private BukkitAudiences adventure;
     private FileConfiguration config;
-    private FileConfiguration messages;
-    private ConfigSettings ConfigSettings;
+    private FileConfiguration commandsConfig;
+    private ConfigSettings configSettings;
+    private final Map<String, Boolean> commandStatus = new HashMap<>();
     private cmdalias cmdAliasHandler;
     private cmdsign cmdSignHandler;
-    private Map<String, Boolean> commandStatus = new HashMap<>();
-    private CmdBlocker cmdBlocker;
+    private AnnouncementManager announcementManager;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        loadChatConfig();
+        adventure = BukkitAudiences.create(this);
+
+        ChatCommands chatCommands = new ChatCommands(this);
+        if (getCommand("ban") != null) {
+            getCommand("ban").setExecutor(chatCommands);
+        }
+        if (getCommand("mute") != null) {
+            getCommand("mute").setExecutor(chatCommands);
+        }
+        if (getCommand("kick") != null) {
+            getCommand("kick").setExecutor(chatCommands);
+        }
+
+        getServer().getPluginManager().registerEvents(new ChatListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerLeaveListener(this), this);
+
         config = getConfig();
-        ConfigSettings = new ConfigSettings(this);
+        configSettings = new ConfigSettings(this);
         cmdAliasHandler = new cmdalias(this);
         cmdSignHandler = new cmdsign(this);
         new CommandPreprocessListener(this);
         saveDefaultLangFiles();
-        loadMessages();
+        createConfigFiles();
         loadCommandStatus();
         registerCommands();
         getCommand("cmdplus").setTabCompleter(this);
@@ -52,14 +75,54 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
         getServer().getPluginManager().registerEvents(new SellChestListener(this), this);
 
         // Initialize CmdBlocker
-        cmdBlocker = new CmdBlocker(this);
+        CmdBlocker cmdBlocker = new CmdBlocker(this);
         getServer().getPluginManager().registerEvents(new CommandBlockerTabCompleter(cmdBlocker), this);
 
         // Translate color codes in the plugin prefix
-        String translatedPrefix = ChatColor.translateAlternateColorCodes('&', ConfigSettings.getPluginPrefix());
+        String translatedPrefix = ChatColor.translateAlternateColorCodes('&', configSettings.getPluginPrefix());
         Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "===============================");
-        Bukkit.getConsoleSender().sendMessage(translatedPrefix + "CmdPlus is now enabled!");
+        Bukkit.getConsoleSender().sendMessage(translatedPrefix + "cmdplus is now enabled!");
         Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "===============================");
+
+        // Initialize AnnouncementManager
+        announcementManager = new AnnouncementManager(this);
+    }
+
+    @Override
+    public void onDisable() {
+        if (adventure != null) {
+            adventure.close();
+            adventure = null;
+        }
+        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "===============================");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "cmdplus is now disabled D:");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "===============================");
+    }
+
+    private void loadChatConfig() {
+        File chatFile = new File(getDataFolder(), "chat-config.yml");
+        if (!chatFile.exists()) {
+            saveResource("chat-config.yml", false);
+        }
+        chatConfig = YamlConfiguration.loadConfiguration(chatFile);
+    }
+
+    public FileConfiguration getChatConfig() {
+        return chatConfig;
+    }
+
+    public String getChatMessage(String key, Map<String, String> placeholders) {
+        String message = chatConfig.getString(key, "Message not found");
+        if (placeholders != null) {
+            for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+                message = message.replace("{" + entry.getKey() + "}", entry.getValue());
+            }
+        }
+        return message;
+    }
+
+    public BukkitAudiences adventure() {
+        return adventure;
     }
 
     private void saveDefaultLangFiles() {
@@ -75,13 +138,21 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
         saveResource("lang/messages_zh.yml", false);
     }
 
-    private void loadMessages() {
-        String lang = config.getString("Language", "en");
-        File messagesFile = new File(getDataFolder(), "lang/messages_" + lang + ".yml");
-        if (!messagesFile.exists()) {
-            saveResource("lang/messages_" + lang + ".yml", false);
+    private void createConfigFiles() {
+        createFileIfNotExists(new File(getDataFolder(), "commands.yml"), "default commands content");
+        createFileIfNotExists(new File(getDataFolder(), "prices.yml"), "default prices content");
+        createFileIfNotExists(new File(getDataFolder(), "blockedcmds.yml"), "default blocked commands content");
+        createFileIfNotExists(new File(getDataFolder(), "aliases.yml"), "default aliases content");
+    }
+
+    private void createFileIfNotExists(File file, String defaultContent) {
+        if (!file.exists()) {
+            try (FileWriter writer = new FileWriter(file)) {
+                writer.write(defaultContent);
+            } catch (IOException e) {
+                getLogger().severe("Could not create file: " + file.getName());
+            }
         }
-        messages = YamlConfiguration.loadConfiguration(messagesFile);
     }
 
     private void loadCommandStatus() {
@@ -89,7 +160,7 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
         if (!commandsFile.exists()) {
             saveResource("commands.yml", false);
         }
-        FileConfiguration commandsConfig = YamlConfiguration.loadConfiguration(commandsFile);
+        commandsConfig = YamlConfiguration.loadConfiguration(commandsFile);
         for (String command : commandsConfig.getConfigurationSection("Commands").getKeys(false)) {
             commandStatus.put(command, commandsConfig.getBoolean("Commands." + command));
         }
@@ -105,76 +176,127 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
         if (commandStatus.getOrDefault("privatechest", false)) {
             getCommand("privatechest").setExecutor(new PrivateChestCommand(this));
         }
-        // Add more commands as needed
+        if (commandStatus.getOrDefault("tempban", false)) {
+            getCommand("tempban").setExecutor(new ChatCommands(this));
+        }
+        if (commandStatus.getOrDefault("mute", false)) {
+            getCommand("mute").setExecutor(new ChatCommands(this));
+        }
+        if (commandStatus.getOrDefault("ban", false)) {
+            getCommand("ban").setExecutor(new ChatCommands(this));
+        }
+        if (commandStatus.getOrDefault("kick", false)) {
+            getCommand("kick").setExecutor(new ChatCommands(this));
+        }
     }
 
-    @Override
-    public void onDisable() {
-        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "===============================");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "CmdPlus is now disabled D:");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "===============================");
+    private void reloadCommandsConfig() {
+        File commandsFile = new File(getDataFolder(), "commands.yml");
+        if (!commandsFile.exists()) {
+            saveResource("commands.yml", false);
+        }
+        commandsConfig = YamlConfiguration.loadConfiguration(commandsFile);
+        commandStatus.clear();
+        for (String command : commandsConfig.getConfigurationSection("Commands").getKeys(false)) {
+            commandStatus.put(command, commandsConfig.getBoolean("Commands." + command));
+        }
     }
 
     public void reloadPluginConfig() {
         reloadConfig();
         config = getConfig();
-        ConfigSettings.reloadConfig();
+        configSettings.reloadConfig();
         cmdAliasHandler.reloadAliases();
         cmdSignHandler.reloadSigns();
-        loadMessages();
-        loadCommandStatus();
+        loadChatConfig();
+        reloadCommandsConfig();
         registerCommands();
+
+        // Log new config.yml settings
+        getLogger().info("New config.yml settings:");
+        for (String key : config.getKeys(true)) {
+            getLogger().info(key + ": " + config.get(key));
+        }
+    }
+
+    public void reloadChatConfig() {
+        loadChatConfig();
+        getServer().getPluginManager().registerEvents(new ChatListener(this), this);
+        getCommand("ban").setExecutor(new ChatCommands(this));
+        getCommand("mute").setExecutor(new ChatCommands(this));
+        getCommand("kick").setExecutor(new ChatCommands(this));
+
+        // Log new chat-config.yml settings
+        getLogger().info("New chat-config.yml settings:");
+        for (String key : chatConfig.getKeys(true)) {
+            getLogger().info(key + ": " + chatConfig.get(key));
+        }
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("cmdplus")) {
-            if (args.length < 2 || !args[0].equalsIgnoreCase("reload")) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', getMessage("cmdplus_usage")));
+            if (args.length < 1) {
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', getChatMessage("Messages.cmdplus_usage", null)));
                 return true;
             }
 
             long startTime = System.nanoTime();
 
-            if (args[1].equalsIgnoreCase("all")) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Reloading CmdPlus..."));
-                config = getConfig();
-                ConfigSettings.reloadConfig();
-                cmdAliasHandler.reloadAliases();
-                cmdSignHandler.reloadSigns();
-                loadCommandStatus();
-                registerCommands();
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "CmdPlus &areloaded!"));
-            } else if (args[1].equalsIgnoreCase("alias")) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Reloading aliases..."));
-                cmdAliasHandler.reloadAliases();
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Aliases &areloaded!"));
-            } else if (args[1].equalsIgnoreCase("sign")) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Reloading signs..."));
-                cmdSignHandler.reloadSigns();
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Signs &areloaded!"));
-            } else if (args[1].equalsIgnoreCase("config")) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Reloading config..."));
-                config = getConfig();
-                ConfigSettings.reloadConfig();
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Config &areloaded!"));
-            } else {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Unknown reload target: " + args[1]));
-                return true;
+            switch (args[0].toLowerCase()) {
+                case "reload":
+                    if (args.length == 1) {
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', getChatMessage("Messages.cmdplus_reload_usage", null)));
+                        return true;
+                    }
+                    switch (args[1].toLowerCase()) {
+                        case "all":
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Reloading cmdplus..."));
+                            reloadPluginConfig();
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "cmdplus &areloaded!"));
+                            break;
+                        case "alias":
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Reloading aliases..."));
+                            cmdAliasHandler.reloadAliases();
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Aliases &areloaded!"));
+                            break;
+                        case "sign":
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Reloading signs..."));
+                            cmdSignHandler.reloadSigns();
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Signs &areloaded!"));
+                            break;
+                        case "config":
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Reloading config..."));
+                            reloadConfig();
+                            config = getConfig();
+                            configSettings.reloadConfig();
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Config &areloaded!"));
+                            break;
+                        case "chat":
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Reloading chat config..."));
+                            reloadChatConfig();
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Chat config &areloaded!"));
+                            break;
+                        default:
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', getChatMessage("Messages.cmdplus_reload_usage", null)));
+                            return true;
+                    }
+                    long endTime = System.nanoTime();
+                    long duration = endTime - startTime;
+                    double seconds = duration / 1_000_000_000.0;
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format("Reload took %.3f seconds.", seconds)));
+                    return true;
+
+                default:
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', getChatMessage("Messages.cmdplus_usage", null)));
+                    return true;
             }
-
-            long endTime = System.nanoTime();
-            long duration = endTime - startTime;
-            double seconds = duration / 1_000_000_000.0;
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format("Reload took %.3f seconds.", seconds)));
-
-            return true;
         }
         return false;
     }
 
     public String getMessage(String key) {
-        return ChatColor.translateAlternateColorCodes('&', messages.getString(key, "Message not found: " + key));
+        return ChatColor.translateAlternateColorCodes('&', chatConfig.getString(key, "Message not found: " + key));
     }
 
     @Override
@@ -183,7 +305,7 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
             if (args.length == 1) {
                 return Arrays.asList("reload");
             } else if (args.length == 2 && args[0].equalsIgnoreCase("reload")) {
-                return Arrays.asList("all", "alias", "sign", "config");
+                return Arrays.asList("all", "alias", "sign", "config", "chat");
             }
         }
         return Collections.emptyList();

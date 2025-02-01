@@ -2,3 +2,7 @@ Commands:
   trash: true
   bin: true
   privatechest: true
+  tempban: true
+  mute: true
+  ban: true
+  kick: true

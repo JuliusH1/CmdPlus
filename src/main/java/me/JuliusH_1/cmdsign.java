@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
@@ -80,6 +81,7 @@ public class cmdsign implements Listener {
                         }
                         // Allow player to edit the sign
                         player.openSign(sign);
+                        sign.update(); // Ensure the sign is updated
                     } else {
                         if (!player.hasPermission("cmdsign.use")) {
                             player.sendMessage(pluginPrefix + plugin.getConfig().getString("messages.no_permission"));
@@ -91,7 +93,7 @@ public class cmdsign implements Listener {
                         long currentTime = System.currentTimeMillis();
 
                         if (cooldowns.containsKey(playerId) && (currentTime - cooldowns.get(playerId)) < cmdsignCooldown) {
-                            player.sendMessage(pluginPrefix + getMessage("on_cmdsign_cooldown"));
+                            player.sendMessage(pluginPrefix + ChatColor.RED + getMessage("on_cmdsign_cooldown"));
                             event.setCancelled(true);
                             return;
                         }
@@ -125,7 +127,7 @@ public class cmdsign implements Listener {
                         pendingRemovals.put(playerId, signLocation);
                         player.sendMessage(pluginPrefix + getMessage("confirm_remove_cmdsign"));
                     }
-                } else if (player.isSneaking()) {
+                } else if (player.isSneaking() && event.getAction() == Action.LEFT_CLICK_BLOCK) {
                     if (isDye(itemInHand.getType())) {
                         applyColorToSign(sign, itemInHand.getType());
                         player.sendMessage(pluginPrefix + ChatColor.GREEN + "Sign color updated!");
@@ -235,7 +237,6 @@ public class cmdsign implements Listener {
         long hours = (remainingTime / (1000 * 60 * 60)) % 24;
         player.sendMessage(pluginPrefix + ChatColor.RED + "You must wait " + hours + "h " + minutes + "m " + seconds + "s before using this sign again.");
     }
-
 
     private void sendCommandFeedback(Player player, boolean success) {
         if (success) {

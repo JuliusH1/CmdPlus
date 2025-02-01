@@ -1,5 +1,10 @@
+D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\AnnouncementManager.java
+D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\ChatCommands.java
+D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\ChatListener.java
+D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\ChatUtils.java
 D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\cmdalias.java
 D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\CmdBlocker.java
+D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\CmdChatCommand.java
 D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\cmdplus.java
 D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\CmdPlusTabCompleter.java
 D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\cmdsign.java
@@ -7,8 +12,11 @@ D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\CommandBlockerTabCompleter.java
 D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\CommandPreprocessListener.java
 D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\ConfigSettings.java
 D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\EconomyManager.java
+D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\PlayerJoinListener.java
+D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\PlayerLeaveListener.java
 D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\PrivateChestCommand.java
 D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\PrivateChestSign.java
 D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\SellChestListener.java
+D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\TextUtils.java
 D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\Transaction.java
 D:\plugins\CmdPlus\src\main\java\me\JuliusH_1\TrashCommand.java
