@@ -9,3 +9,14 @@ settings:
   language: EN # Default language. check the lang folder for available languages | Some translations may not be accurate! please let me know which are not so I can fix this in the next update.
   cmdsign_cooldown: 10s
   plugin_prefix: "&7[&6CmdPlus&7] " # add a space at the end of the prefix. NEEDS A RESTART TO AFFECT THE MESSAGES
+
+
+Potions:
+  Settings:
+    max-stacked: 64 # Max stacked potions in a stack
+    max-stacked-splash: 64 # Max stacked splash potions in a stack
+  Blacklist:
+    - splash_potion_of_healing # Blacklist potions from stacking
+    - splash_potion_of_insta_health
+    - splash_potion_of_insta_damage
+

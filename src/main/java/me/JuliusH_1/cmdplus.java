@@ -51,6 +51,8 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerLeaveListener(this), this);
+        getServer().getPluginManager().registerEvents(new PotionStackListener(getConfig()), this);
+
 
         config = getConfig();
         configSettings = new ConfigSettings(this);

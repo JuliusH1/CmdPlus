@@ -1,5 +1,5 @@
 name: CmdPlus
-version: 1.0
+version: v5.0-BETA
 main: me.JuliusH_1.cmdplus
 softdepend: [PlaceholderAPI]
 api-version: 1.21
