@@ -5,7 +5,40 @@
 # Alias permissions: in aliases.yml!!
 #
 settings:
-  cmd_cooldown: 1s # s = second | m = minute
-  language: EN # Default language. check the lang folder for available languages | Some translations may not be accurate! please let me know which are not so I can fix this in the next update.
+  cmd_cooldown: 1s
+  language: EN #language file other languages: DE, ES, FR, IT, NL, PL, PT, RU, ZH, JA
   cmdsign_cooldown: 10s
-  plugin_prefix: "&7[&6CmdPlus&7] " # add a space at the end of the prefix. NEEDS A RESTART TO AFFECT THE MESSAGES
+  plugin_prefix: "&7[&6CmdPlus&7] " # needs restart to change color
+
+Potions:
+  Settings:
+    max-stacked: 64 # the maximum amount of potions that can be stacked
+    max-stacked-splash: 64 # the maximum amount of splash potions that can be stacked
+  Blacklist:
+    - splash_potion_of_healing # this potion will not be allowed to be stacked
+    - splash_potion_of_insta_health
+    - splash_potion_of_insta_damage
+
+Chat:
+  Settings:
+    JoinMessage: true #if true the custom join message will be enabled
+    LeaveMessage: true #if true the custom leave message will be enabled
+
+  chat-messages:
+    ban_message: "<gradient:#ff0000:#0000ff>{player} ʜᴀꜱ ʙᴇᴇɴ ʙᴀɴɴᴇᴅ ꜰᴏʀ {reason}.</gradient>"
+    mute_message: "<gradient:#ff0000:#0000ff>{player} ʜᴀꜱ ʙᴇᴇɴ ᴍᴜᴛᴇᴅ ꜰᴏʀ {reason}.</gradient>"
+    kick_message: "<gradient:#ff0000:#0000ff>{player} ʜᴀꜱ ʙᴇᴇɴ ᴋɪᴄᴋᴇᴅ ꜰᴏʀ {reason}.</gradient>"
+    join_message: "<gradient:#00ff00:#0000ff>&7[&e+&7]{player} ᴊᴏɪɴᴇᴅ ᴛʜᴇ ꜱᴇʀᴠᴇʀ!</gradient>"
+    leave_message: "<gradient:#ff0000:#0000ff>&7[&c-&7]{player} ʟᴇꜰᴛ ᴛʜᴇ ꜱᴇʀᴠᴇʀ!</gradient>"
+
+# WORK IN PROCESS! SOON TO BE ADDED!
+  announcements:
+    time: 15
+    random: true
+    1:
+      message:
+        - "<gradient:#ff0000:#0000ff>VoidCraft Network</gradient>"
+        - "<gradient:#ff0000:#0000ff>Join our discord at discord.gg/voidcraft</gradient>"
+    2:
+      message:
+        - "test"

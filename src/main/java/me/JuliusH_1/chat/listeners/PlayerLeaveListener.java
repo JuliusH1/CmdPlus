@@ -1,5 +1,7 @@
-package me.JuliusH_1;
+package me.JuliusH_1.chat.listeners;
 
+import me.JuliusH_1.chat.TextUtils;
+import me.JuliusH_1.cmdplus;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -16,10 +18,10 @@ public class PlayerLeaveListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (plugin.getChatConfig().getBoolean("Settings.LeaveMessage", true)) {
+        if (plugin.getConfig().getBoolean("Chat.Settings.LeaveMessage", true)) {
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("player", event.getPlayer().getName());
-            String leaveMessage = plugin.getChatMessage("Messages.leave_message", placeholders);
+            String leaveMessage = plugin.getChatMessage("leave_message", placeholders);
             event.setQuitMessage(TextUtils.parse(leaveMessage).toString());
         }
     }

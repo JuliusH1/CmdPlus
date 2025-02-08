@@ -1,5 +1,5 @@
 name: CmdPlus
-version: 1.0
+version: v5.0-BETA
 main: me.JuliusH_1.cmdplus
 softdepend: [PlaceholderAPI]
 api-version: 1.21
@@ -27,3 +27,7 @@ commands:
     description: Opens a trash bin to dispose of items
   privatechest:
     description: Opens a private chest
+  vanish:
+    description: "Toggle vanish mode"
+    usage: "/vanish"
+    permission: "vanish.use"

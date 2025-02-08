@@ -1,13 +1,12 @@
-package me.JuliusH_1;
+package me.JuliusH_1.chat;
 
+import me.JuliusH_1.cmdplus;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.Component;
 
 import java.util.Arrays;
 import java.util.HashMap;

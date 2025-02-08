@@ -1,5 +1,9 @@
 package me.JuliusH_1;
 
+import me.JuliusH_1.chat.*;
+import me.JuliusH_1.chat.listeners.ChatListener;
+import me.JuliusH_1.chat.listeners.PlayerJoinListener;
+import me.JuliusH_1.chat.listeners.PlayerLeaveListener;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,6 +14,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.JuliusH_1.othercommands.vanish.VanishCommand;
+import me.JuliusH_1.othercommands.vanish.VanishListener;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,13 +25,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class cmdplus extends JavaPlugin implements TabCompleter {
-    private FileConfiguration chatConfig;
-    private BukkitAudiences adventure;
     private FileConfiguration config;
-    private FileConfiguration commandsConfig;
+    private BukkitAudiences adventure;
     private ConfigSettings configSettings;
     private final Map<String, Boolean> commandStatus = new HashMap<>();
     private cmdalias cmdAliasHandler;
@@ -34,10 +38,10 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        loadChatConfig();
         adventure = BukkitAudiences.create(this);
 
         ChatCommands chatCommands = new ChatCommands(this);
+        VanishCommand vanishCommand = new VanishCommand(this);
         if (getCommand("ban") != null) {
             getCommand("ban").setExecutor(chatCommands);
         }
@@ -47,11 +51,16 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
         if (getCommand("kick") != null) {
             getCommand("kick").setExecutor(chatCommands);
         }
+        if (getCommand("vanish") != null) {
+        getCommand("vanish").setExecutor(vanishCommand);
+        }
+
 
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerLeaveListener(this), this);
         getServer().getPluginManager().registerEvents(new PotionStackListener(getConfig()), this);
+        getServer().getPluginManager().registerEvents(new VanishListener(vanishCommand), this);
 
 
         config = getConfig();
@@ -101,26 +110,22 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "===============================");
     }
 
-    private void loadChatConfig() {
-        File chatFile = new File(getDataFolder(), "chat-config.yml");
-        if (!chatFile.exists()) {
-            saveResource("chat-config.yml", false);
-        }
-        chatConfig = YamlConfiguration.loadConfiguration(chatFile);
-    }
-
-    public FileConfiguration getChatConfig() {
-        return chatConfig;
-    }
-
     public String getChatMessage(String key, Map<String, String> placeholders) {
-        String message = chatConfig.getString(key, "Message not found");
+        String message = config.getString("Chat.Messages." + key, "Message not found");
         if (placeholders != null) {
             for (Map.Entry<String, String> entry : placeholders.entrySet()) {
                 message = message.replace("{" + entry.getKey() + "}", entry.getValue());
             }
         }
         return message;
+    }
+
+    public boolean isJoinMessageEnabled() {
+        return config.getBoolean("Chat.Settings.JoinMessage", true);
+    }
+
+    public boolean isLeaveMessageEnabled() {
+        return config.getBoolean("Chat.Settings.LeaveMessage", true);
     }
 
     public BukkitAudiences adventure() {
@@ -162,7 +167,7 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
         if (!commandsFile.exists()) {
             saveResource("commands.yml", false);
         }
-        commandsConfig = YamlConfiguration.loadConfiguration(commandsFile);
+        FileConfiguration commandsConfig = YamlConfiguration.loadConfiguration(commandsFile);
         for (String command : commandsConfig.getConfigurationSection("Commands").getKeys(false)) {
             commandStatus.put(command, commandsConfig.getBoolean("Commands." + command));
         }
@@ -192,26 +197,13 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
         }
     }
 
-    private void reloadCommandsConfig() {
-        File commandsFile = new File(getDataFolder(), "commands.yml");
-        if (!commandsFile.exists()) {
-            saveResource("commands.yml", false);
-        }
-        commandsConfig = YamlConfiguration.loadConfiguration(commandsFile);
-        commandStatus.clear();
-        for (String command : commandsConfig.getConfigurationSection("Commands").getKeys(false)) {
-            commandStatus.put(command, commandsConfig.getBoolean("Commands." + command));
-        }
-    }
-
     public void reloadPluginConfig() {
         reloadConfig();
         config = getConfig();
         configSettings.reloadConfig();
         cmdAliasHandler.reloadAliases();
         cmdSignHandler.reloadSigns();
-        loadChatConfig();
-        reloadCommandsConfig();
+        loadCommandStatus();
         registerCommands();
 
         // Log new config.yml settings
@@ -221,25 +213,11 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
         }
     }
 
-    public void reloadChatConfig() {
-        loadChatConfig();
-        getServer().getPluginManager().registerEvents(new ChatListener(this), this);
-        getCommand("ban").setExecutor(new ChatCommands(this));
-        getCommand("mute").setExecutor(new ChatCommands(this));
-        getCommand("kick").setExecutor(new ChatCommands(this));
-
-        // Log new chat-config.yml settings
-        getLogger().info("New chat-config.yml settings:");
-        for (String key : chatConfig.getKeys(true)) {
-            getLogger().info(key + ": " + chatConfig.get(key));
-        }
-    }
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("cmdplus")) {
             if (args.length < 1) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', getChatMessage("Messages.cmdplus_usage", null)));
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', getChatMessage("cmdplus_usage", null)));
                 return true;
             }
 
@@ -248,7 +226,7 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
             switch (args[0].toLowerCase()) {
                 case "reload":
                     if (args.length == 1) {
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', getChatMessage("Messages.cmdplus_reload_usage", null)));
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', getChatMessage("cmdplus_reload_usage", null)));
                         return true;
                     }
                     switch (args[1].toLowerCase()) {
@@ -276,11 +254,11 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
                             break;
                         case "chat":
                             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Reloading chat config..."));
-                            reloadChatConfig();
+                            reloadPluginConfig();
                             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "Chat config &areloaded!"));
                             break;
                         default:
-                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', getChatMessage("Messages.cmdplus_reload_usage", null)));
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', getChatMessage("cmdplus_reload_usage", null)));
                             return true;
                     }
                     long endTime = System.nanoTime();
@@ -290,15 +268,11 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
                     return true;
 
                 default:
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', getChatMessage("Messages.cmdplus_usage", null)));
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', getChatMessage("cmdplus_usage", null)));
                     return true;
             }
         }
         return false;
-    }
-
-    public String getMessage(String key) {
-        return ChatColor.translateAlternateColorCodes('&', chatConfig.getString(key, "Message not found: " + key));
     }
 
     @Override

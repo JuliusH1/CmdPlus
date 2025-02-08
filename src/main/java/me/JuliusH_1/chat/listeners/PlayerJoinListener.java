@@ -1,5 +1,7 @@
-package me.JuliusH_1;
+package me.JuliusH_1.chat.listeners;
 
+import me.JuliusH_1.chat.TextUtils;
+import me.JuliusH_1.cmdplus;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -16,10 +18,10 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (plugin.getChatConfig().getBoolean("Settings.JoinMessage", true)) {
+        if (plugin.getConfig().getBoolean("Chat.Settings.JoinMessage", true)) {
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("player", event.getPlayer().getName());
-            String joinMessage = plugin.getChatMessage("Messages.join_message", placeholders);
+            String joinMessage = plugin.getChatMessage("join_message", placeholders);
             event.setJoinMessage(TextUtils.parse(joinMessage).toString());
         }
     }

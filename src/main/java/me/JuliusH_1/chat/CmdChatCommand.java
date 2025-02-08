@@ -1,4 +1,4 @@
-package me.JuliusH_1;
+package me.JuliusH_1.chat;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

@@ -1,10 +1,9 @@
-package me.JuliusH_1;
+package me.JuliusH_1.chat;
 
+import me.JuliusH_1.cmdplus;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;

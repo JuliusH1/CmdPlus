@@ -27,3 +27,7 @@ commands:
     description: Opens a trash bin to dispose of items
   privatechest:
     description: Opens a private chest
+  vanish:
+    description: "Toggle vanish mode"
+    usage: "/vanish"
+    permission: "vanish.use"

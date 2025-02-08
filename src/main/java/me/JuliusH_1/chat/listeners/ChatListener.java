@@ -1,10 +1,9 @@
-package me.JuliusH_1;
+package me.JuliusH_1.chat.listeners;
 
+import me.JuliusH_1.cmdplus;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.Component;
 
 import java.util.HashSet;
 import java.util.Set;
