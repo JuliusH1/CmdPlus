@@ -1,9 +1,16 @@
-# SOON
-blocked-commands:
-  - pl
-  - plugins
-  - bukkit
-  - version
-  - reload
-  - help
-  - ?
+blockedcmds:
+  - /op
+  - /deop
+  - /stop
+  - /ver
+  - /version
+  - /reload
+  - /rl
+  - /bukkit:reload
+  - /bukkit:rl
+  - /bukkit:plugins
+  - /bukkit:pl
+  - /bukkit:version
+  - /bukkit:ver
+  - /bukkit:help
+  - /bukkit:?

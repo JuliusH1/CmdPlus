@@ -52,16 +52,14 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
             getCommand("kick").setExecutor(chatCommands);
         }
         if (getCommand("vanish") != null) {
-        getCommand("vanish").setExecutor(vanishCommand);
+            getCommand("vanish").setExecutor(vanishCommand);
         }
-
 
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerLeaveListener(this), this);
         getServer().getPluginManager().registerEvents(new PotionStackListener(getConfig()), this);
         getServer().getPluginManager().registerEvents(new VanishListener(vanishCommand), this);
-
 
         config = getConfig();
         configSettings = new ConfigSettings(this);

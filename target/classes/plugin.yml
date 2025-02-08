@@ -1,5 +1,5 @@
 name: CmdPlus
-version: v5.0-BETA
+version: 5.0-BETA
 main: me.JuliusH_1.cmdplus
 softdepend: [PlaceholderAPI]
 api-version: 1.21
@@ -16,18 +16,22 @@ commands:
     usage: /cmdplus reload <alias/sign/config/all>
     permission: cmdplus.manage
   ban:
-    description: Bans a player
+    description: "Ban a player"
+    usage: "/ban <player> <time> <reason>"
+    permission: "cmdplus.ban"
   mute:
-    description: Mutes a player
+    description: "Mute a player"
+    usage: "/mute <player> <time> <reason>"
+    permission: "cmdplus.mute"
   kick:
-    description: Kicks a player
-  trash:
-    description: Opens a trash bin to dispose of items
-  bin:
-    description: Opens a trash bin to dispose of items
-  privatechest:
-    description: Opens a private chest
-  vanish:
-    description: "Toggle vanish mode"
-    usage: "/vanish"
-    permission: "vanish.use"
+    description: "Kick a player"
+    usage: "/kick <player> <reason>"
+    permission: "cmdplus.kick"
+  tempban:
+    description: "Temporarily ban a player"
+    usage: "/tempban <player> <time> <reason>"
+    permission: "cmdplus.tempban"
+  tempmute:
+    description: "Temporarily mute a player"
+    usage: "/tempmute <player> <time> <reason>"
+    permission: "cmdplus.tempmute"

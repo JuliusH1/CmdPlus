@@ -24,7 +24,7 @@ Chat:
     JoinMessage: true #if true the custom join message will be enabled
     LeaveMessage: true #if true the custom leave message will be enabled
 
-  chat-messages:
+  Messages:
     ban_message: "<gradient:#ff0000:#0000ff>{player} ʜᴀꜱ ʙᴇᴇɴ ʙᴀɴɴᴇᴅ ꜰᴏʀ {reason}.</gradient>"
     mute_message: "<gradient:#ff0000:#0000ff>{player} ʜᴀꜱ ʙᴇᴇɴ ᴍᴜᴛᴇᴅ ꜰᴏʀ {reason}.</gradient>"
     kick_message: "<gradient:#ff0000:#0000ff>{player} ʜᴀꜱ ʙᴇᴇɴ ᴋɪᴄᴋᴇᴅ ꜰᴏʀ {reason}.</gradient>"
