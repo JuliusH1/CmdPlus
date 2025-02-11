@@ -4,6 +4,8 @@ import me.JuliusH_1.chat.*;
 import me.JuliusH_1.chat.listeners.ChatListener;
 import me.JuliusH_1.chat.listeners.PlayerJoinListener;
 import me.JuliusH_1.chat.listeners.PlayerLeaveListener;
+import me.JuliusH_1.othercommands.vanish.VanishManager;
+import me.JuliusH_1.othercommands.vanish.features.*;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -34,14 +36,16 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
     private cmdalias cmdAliasHandler;
     private cmdsign cmdSignHandler;
     private AnnouncementManager announcementManager;
+    private VanishManager vanishManager;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
         adventure = BukkitAudiences.create(this);
+        vanishManager = new VanishManager();
 
         ChatCommands chatCommands = new ChatCommands(this);
-        VanishCommand vanishCommand = new VanishCommand(this);
+        VanishCommand vanishCommand = new VanishCommand(this, vanishManager);
         if (getCommand("ban") != null) {
             getCommand("ban").setExecutor(chatCommands);
         }
@@ -54,12 +58,22 @@ public class cmdplus extends JavaPlugin implements TabCompleter {
         if (getCommand("vanish") != null) {
             getCommand("vanish").setExecutor(vanishCommand);
         }
+        getServer().getPluginManager().registerEvents(new VanishListener(vanishManager, this), this);
 
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerLeaveListener(this), this);
         getServer().getPluginManager().registerEvents(new PotionStackListener(getConfig()), this);
-        getServer().getPluginManager().registerEvents(new VanishListener(vanishCommand), this);
+        getServer().getPluginManager().registerEvents(new VanishListener(vanishManager, this), this);
+        getServer().getPluginManager().registerEvents(new SilentOpenChest(vanishManager), this);
+        getServer().getPluginManager().registerEvents(new NoPush(vanishManager), this);
+        getServer().getPluginManager().registerEvents(new NoMobSpawn(vanishManager), this);
+        getServer().getPluginManager().registerEvents(new NoDripleafTilt(), this);
+        getServer().getPluginManager().registerEvents(new NightVision(this), this);
+        getServer().getPluginManager().registerEvents(new NoTurtleEggBreaking(), this);
+        getServer().getPluginManager().registerEvents(new NoRaidTrigger(), this);
+        getServer().getPluginManager().registerEvents(new NoSculkSensorDetection(vanishManager), this);
+        getServer().getPluginManager().registerEvents(new HideAdvancementMessages(), this);
 
         config = getConfig();
         configSettings = new ConfigSettings(this);

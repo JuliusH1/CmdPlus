@@ -8,15 +8,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class VanishCommand implements CommandExecutor {
-    public final JavaPlugin plugin;
-    private final Set<Player> vanishedPlayers = new HashSet<>();
+    private final JavaPlugin plugin;
+    private final VanishManager vanishManager;
 
-    public VanishCommand(JavaPlugin plugin) {
+    public VanishCommand(JavaPlugin plugin, VanishManager vanishManager) {
         this.plugin = plugin;
+        this.vanishManager = vanishManager;
     }
 
     @Override
@@ -37,13 +35,13 @@ public class VanishCommand implements CommandExecutor {
             return true;
         }
 
-        if (vanishedPlayers.contains(player)) {
+        if (vanishManager.isVanished(player)) {
             showPlayer(player);
-            vanishedPlayers.remove(player);
+            vanishManager.setVanished(player, false);
             player.sendMessage(ChatColor.GREEN + "You are now visible.");
         } else {
             hidePlayer(player);
-            vanishedPlayers.add(player);
+            vanishManager.setVanished(player, true);
             player.sendMessage(ChatColor.GREEN + "You are now vanished.");
         }
 
@@ -65,9 +63,5 @@ public class VanishCommand implements CommandExecutor {
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             onlinePlayer.showPlayer(plugin, player);
         }
-    }
-
-    public Set<Player> getVanishedPlayers() {
-        return vanishedPlayers;
     }
 }

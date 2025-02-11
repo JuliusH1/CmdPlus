@@ -45,3 +45,7 @@ Chat:
     2:
       message:
         - "test"
+
+
+Vanish:
+  Night_vision: true
