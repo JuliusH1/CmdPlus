@@ -18,7 +18,10 @@ Potions:
     - splash_potion_of_healing # this potion will not be allowed to be stacked
     - splash_potion_of_insta_health
     - splash_potion_of_insta_damage
-
+    - splash_potion_of_poison
+    - splash_potion_of_slowness
+    - splash_potion_of_turtle_master
+    - splash_potion_of_harming
 Chat:
   Settings:
     JoinMessage: true #if true the custom join message will be enabled

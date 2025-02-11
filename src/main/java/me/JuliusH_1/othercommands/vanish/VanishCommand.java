@@ -26,6 +26,11 @@ public class VanishCommand implements CommandExecutor {
             return true;
         }
 
+        if (!plugin.getConfig().getBoolean("Commands.vanish", true)) {
+            sender.sendMessage(ChatColor.RED + "This command is disabled.");
+            return true;
+        }
+
         Player player = (Player) sender;
         if (!player.hasPermission("vanish.use")) {
             player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
